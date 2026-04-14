@@ -20,40 +20,41 @@
 
 ## File Map
 
-| File | Action | Responsibility |
-|---|---|---|
-| `proxy.ts` | Create | Session refresh — calls `updateSession`, no redirects |
-| `src/lib/supabase/proxy.ts` | Create | `updateSession(request)` helper for proxy.ts |
-| `src/lib/supabase/server.ts` | Modify | Add `createAdminClient()` for service-role operations |
-| `src/lib/validations/auth.ts` | Create | Zod schemas: emailSchema, signInSchema, signUpSchema, magicLinkSchema |
-| `src/lib/actions/auth.ts` | Create | Server Actions: checkEmail, signIn, signUp, sendMagicLink, signOut |
-| `src/lib/actions/auth.test.ts` | Create | Unit tests for all auth actions |
-| `app/(auth)/layout.tsx` | Create | Clean centered layout — no navbar |
-| `app/(auth)/callback/route.ts` | Create | Magic link exchange + redirect handler |
-| `app/(auth)/login/page.tsx` | Create | SSR shell — reads ?redirect= param, renders AuthForm |
-| `src/components/ui/input.tsx` | Create | Input component using `@base-ui/react/input` |
-| `src/components/ui/auth-form.tsx` | Create | `"use client"` multi-step RHF login/signup form |
-| `src/components/ui/auth-form.test.tsx` | Create | RTL tests for AuthForm |
-| `src/components/nav-link.tsx` | Create | `"use client"` active-link wrapper using usePathname |
-| `src/components/navbar-actions.tsx` | Create | `"use client"` avatar dropdown + mobile hamburger |
-| `src/components/navbar.tsx` | Create | Server Component navbar — reads auth state |
-| `src/components/navbar.test.tsx` | Create | RTL tests for navbar |
-| `app/(public)/layout.tsx` | Create | Public layout: `<Navbar>` + `{children}` |
-| `app/(public)/page.tsx` | Create | Landing page placeholder (replaces root `app/page.tsx`) |
-| `app/(member)/layout.tsx` | Create | Auth-check layout for /my-clubs |
-| `app/(member)/my-clubs/page.tsx` | Create | /my-clubs placeholder |
-| `src/lib/db/queries/memberships.ts` | Create | `getUserMembership(userId, communitySlug)` query |
-| `src/components/dashboard-sidebar.tsx` | Create | Server Component sidebar |
-| `src/components/dashboard-mobile-tabs.tsx` | Create | `"use client"` horizontal tab strip |
-| `app/dashboard/layout.tsx` | Create | Dashboard auth + role check layout |
-| `app/dashboard/[slug]/page.tsx` | Create | Dashboard overview placeholder |
-| `app/page.tsx` | Delete | Replaced by `app/(public)/page.tsx` |
+| File                                       | Action | Responsibility                                                        |
+| ------------------------------------------ | ------ | --------------------------------------------------------------------- |
+| `proxy.ts`                                 | Create | Session refresh — calls `updateSession`, no redirects                 |
+| `src/lib/supabase/proxy.ts`                | Create | `updateSession(request)` helper for proxy.ts                          |
+| `src/lib/supabase/server.ts`               | Modify | Add `createAdminClient()` for service-role operations                 |
+| `src/lib/validations/auth.ts`              | Create | Zod schemas: emailSchema, signInSchema, signUpSchema, magicLinkSchema |
+| `src/lib/actions/auth.ts`                  | Create | Server Actions: checkEmail, signIn, signUp, sendMagicLink, signOut    |
+| `src/lib/actions/auth.test.ts`             | Create | Unit tests for all auth actions                                       |
+| `app/(auth)/layout.tsx`                    | Create | Clean centered layout — no navbar                                     |
+| `app/(auth)/callback/route.ts`             | Create | Magic link exchange + redirect handler                                |
+| `app/(auth)/login/page.tsx`                | Create | SSR shell — reads ?redirect= param, renders AuthForm                  |
+| `src/components/ui/input.tsx`              | Create | Input component using `@base-ui/react/input`                          |
+| `src/components/ui/auth-form.tsx`          | Create | `"use client"` multi-step RHF login/signup form                       |
+| `src/components/ui/auth-form.test.tsx`     | Create | RTL tests for AuthForm                                                |
+| `src/components/nav-link.tsx`              | Create | `"use client"` active-link wrapper using usePathname                  |
+| `src/components/navbar-actions.tsx`        | Create | `"use client"` avatar dropdown + mobile hamburger                     |
+| `src/components/navbar.tsx`                | Create | Server Component navbar — reads auth state                            |
+| `src/components/navbar.test.tsx`           | Create | RTL tests for navbar                                                  |
+| `app/(public)/layout.tsx`                  | Create | Public layout: `<Navbar>` + `{children}`                              |
+| `app/(public)/page.tsx`                    | Create | Landing page placeholder (replaces root `app/page.tsx`)               |
+| `app/(member)/layout.tsx`                  | Create | Auth-check layout for /my-clubs                                       |
+| `app/(member)/my-clubs/page.tsx`           | Create | /my-clubs placeholder                                                 |
+| `src/lib/db/queries/memberships.ts`        | Create | `getUserMembership(userId, communitySlug)` query                      |
+| `src/components/dashboard-sidebar.tsx`     | Create | Server Component sidebar                                              |
+| `src/components/dashboard-mobile-tabs.tsx` | Create | `"use client"` horizontal tab strip                                   |
+| `app/dashboard/layout.tsx`                 | Create | Dashboard auth + role check layout                                    |
+| `app/dashboard/[slug]/page.tsx`            | Create | Dashboard overview placeholder                                        |
+| `app/page.tsx`                             | Delete | Replaced by `app/(public)/page.tsx`                                   |
 
 ---
 
 ## Task 1: Supabase proxy helper + root proxy.ts
 
 **Files:**
+
 - Create: `src/lib/supabase/proxy.ts`
 - Create: `proxy.ts`
 
@@ -68,7 +69,7 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -132,6 +133,7 @@ git commit -m "feat: add supabase session refresh proxy"
 ## Task 2: Admin client + auth Zod schemas
 
 **Files:**
+
 - Modify: `src/lib/supabase/server.ts`
 - Create: `src/lib/validations/auth.ts`
 
@@ -149,7 +151,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 export function createAdminClient() {
   return createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    process.env.SUPABASE_SECRET_KEY!,
   );
 }
 ```
@@ -175,9 +177,7 @@ export const signUpSchema = z.object({
     .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be 50 characters or less")
     .trim(),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export const magicLinkSchema = z.object({
@@ -205,6 +205,7 @@ git commit -m "feat: add admin supabase client and auth zod schemas"
 ## Task 3: Auth Server Actions (TDD)
 
 **Files:**
+
 - Create: `src/lib/actions/auth.test.ts`
 - Create: `src/lib/actions/auth.ts`
 
@@ -327,7 +328,11 @@ describe("signIn", () => {
       data: { user: { id: "user-1" } },
       error: null,
     });
-    await signIn({ email: "test@test.com", password: "correct", redirectTo: "/my-clubs" });
+    await signIn({
+      email: "test@test.com",
+      password: "correct",
+      redirectTo: "/my-clubs",
+    });
     expect(redirect).toHaveBeenCalledWith("/my-clubs");
   });
 });
@@ -437,9 +442,7 @@ export async function checkEmail(
 
 // ─── signIn ───────────────────────────────────────────────────────────────────
 
-export async function signIn(
-  input: unknown,
-): Promise<ActionResult<void>> {
+export async function signIn(input: unknown): Promise<ActionResult<void>> {
   const parsed = signInSchema.safeParse(
     typeof input === "object" && input !== null ? input : {},
   );
@@ -469,9 +472,7 @@ export async function signIn(
 
 // ─── signUp ───────────────────────────────────────────────────────────────────
 
-export async function signUp(
-  input: unknown,
-): Promise<ActionResult<void>> {
+export async function signUp(input: unknown): Promise<ActionResult<void>> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success) {
     const err = parsed.error.errors[0];
@@ -566,22 +567,22 @@ The `emailRedirectTo` in `sendMagicLink` uses an incorrect URL construction. Rep
 In `src/lib/actions/auth.ts`, replace the `callbackUrl` block and `signInWithOtp` call:
 
 ```typescript
-  const next =
-    typeof input === "object" &&
-    input !== null &&
-    "redirectTo" in input &&
-    typeof (input as { redirectTo?: string }).redirectTo === "string"
-      ? (input as { redirectTo: string }).redirectTo
-      : "/my-clubs";
+const next =
+  typeof input === "object" &&
+  input !== null &&
+  "redirectTo" in input &&
+  typeof (input as { redirectTo?: string }).redirectTo === "string"
+    ? (input as { redirectTo: string }).redirectTo
+    : "/my-clubs";
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: `/auth/callback?next=${encodeURIComponent(next)}`,
-      shouldCreateUser: true,
-    },
-  });
+const supabase = await createClient();
+const { error } = await supabase.auth.signInWithOtp({
+  email,
+  options: {
+    emailRedirectTo: `/auth/callback?next=${encodeURIComponent(next)}`,
+    shouldCreateUser: true,
+  },
+});
 ```
 
 - [ ] **Step 6: Run tests again to confirm still passing**
@@ -604,6 +605,7 @@ git commit -m "feat: auth server actions with tests (checkEmail, signIn, signUp,
 ## Task 4: Auth callback route + layouts
 
 **Files:**
+
 - Create: `app/(auth)/callback/route.ts`
 - Create: `app/(auth)/layout.tsx`
 
@@ -673,6 +675,7 @@ git commit -m "feat: auth callback route and auth layout"
 ## Task 5: Input UI component + AuthForm
 
 **Files:**
+
 - Create: `src/components/ui/input.tsx`
 - Create: `src/components/ui/auth-form.tsx`
 - Create: `src/components/ui/auth-form.test.tsx`
@@ -1203,6 +1206,7 @@ git commit -m "feat: AuthForm multi-step RHF login/signup component and /login p
 ## Task 6: Navbar
 
 **Files:**
+
 - Create: `src/components/nav-link.tsx`
 - Create: `src/components/navbar-actions.tsx`
 - Create: `src/components/navbar.tsx`
@@ -1564,6 +1568,7 @@ git commit -m "feat: navbar with server component auth state and mobile hamburge
 ## Task 7: Public layout + landing placeholder
 
 **Files:**
+
 - Create: `app/(public)/layout.tsx`
 - Create: `app/(public)/page.tsx`
 - Delete: `app/page.tsx`
@@ -1631,6 +1636,7 @@ git commit -m "feat: public layout with navbar and landing placeholder"
 ## Task 8: Member layout + /my-clubs placeholder
 
 **Files:**
+
 - Create: `app/(member)/layout.tsx`
 - Create: `app/(member)/my-clubs/page.tsx`
 
@@ -1709,6 +1715,7 @@ git commit -m "feat: member layout with auth guard and /my-clubs placeholder"
 ## Task 9: Membership query + dashboard layout + sidebar
 
 **Files:**
+
 - Create: `src/lib/db/queries/memberships.ts`
 - Create: `src/components/dashboard-sidebar.tsx`
 - Create: `src/components/dashboard-mobile-tabs.tsx`
@@ -1753,10 +1760,7 @@ export async function getUserMembership(
     .from(memberships)
     .innerJoin(communities, eq(memberships.communityId, communities.id))
     .where(
-      and(
-        eq(memberships.userId, userId),
-        eq(communities.slug, communitySlug),
-      ),
+      and(eq(memberships.userId, userId), eq(communities.slug, communitySlug)),
     )
     .limit(1);
 
@@ -2081,6 +2085,7 @@ git commit -m "feat: dashboard layout with auth/role guard, sidebar, and mobile 
 ## Task 10: Final wiring + smoke test
 
 **Files:**
+
 - Modify: `app/layout.tsx` (remove unused Geist import)
 - Verify dev server runs
 
@@ -2143,6 +2148,7 @@ npm run dev
 ```
 
 Verify in browser:
+
 - `http://localhost:3000` — landing placeholder renders with navbar (no errors)
 - `http://localhost:3000/login` — auth form renders with email step
 - `http://localhost:3000/dashboard/test` — redirects to `/login?redirect=%2Fdashboard%2Ftest` (not authenticated)

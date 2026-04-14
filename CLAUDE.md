@@ -776,7 +776,7 @@ Security is a first-class concern. Every feature must be built with these rules 
 
 ```typescript
 const envSchema = z.object({
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  SUPABASE_SECRET_KEY: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
   RESEND_API_KEY: z.string().startsWith("re_"),
@@ -885,21 +885,21 @@ export async function createEvent(
 
 ### Secrets Checklist
 
-| Secret                 | Env var                              | Server-only? | Used by                   |
-| ---------------------- | ------------------------------------ | ------------ | ------------------------- |
-| Supabase anon key      | `NEXT_PUBLIC_SUPABASE_ANON_KEY`      | No (public)  | Browser Supabase client   |
-| Supabase URL           | `NEXT_PUBLIC_SUPABASE_URL`           | No (public)  | Browser + server client   |
-| Supabase service role  | `SUPABASE_SERVICE_ROLE_KEY`          | YES          | Crons, webhooks only      |
-| Stripe publishable key | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No (public)  | Stripe.js in browser      |
-| Stripe secret key      | `STRIPE_SECRET_KEY`                  | YES          | Server Actions, webhooks  |
-| Stripe webhook secret  | `STRIPE_WEBHOOK_SECRET`              | YES          | Webhook handler           |
-| Stripe Pro price ID    | `NEXT_PUBLIC_STRIPE_PRO_PRICE_ID`    | No (public)  | Checkout session creation |
-| Resend API key         | `RESEND_API_KEY`                     | YES          | Email send function       |
-| Cron secret            | `CRON_SECRET`                        | YES          | Cron route auth           |
-| Upstash Redis URL      | `UPSTASH_REDIS_REST_URL`             | YES          | Rate limiter              |
-| Upstash Redis token    | `UPSTASH_REDIS_REST_TOKEN`           | YES          | Rate limiter              |
-| PostHog project key    | `NEXT_PUBLIC_POSTHOG_KEY`            | No (public)  | Browser analytics         |
-| PostHog host           | `NEXT_PUBLIC_POSTHOG_HOST`           | No (public)  | Browser analytics         |
+| Secret                   | Env var                                | Server-only? | Used by                   |
+| ------------------------ | -------------------------------------- | ------------ | ------------------------- |
+| Supabase publishable key | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | No (public)  | Browser Supabase client   |
+| Supabase URL             | `NEXT_PUBLIC_SUPABASE_URL`             | No (public)  | Browser + server client   |
+| Supabase secret key      | `SUPABASE_SECRET_KEY`                  | YES          | Crons, webhooks only      |
+| Stripe publishable key   | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`   | No (public)  | Stripe.js in browser      |
+| Stripe secret key        | `STRIPE_SECRET_KEY`                    | YES          | Server Actions, webhooks  |
+| Stripe webhook secret    | `STRIPE_WEBHOOK_SECRET`                | YES          | Webhook handler           |
+| Stripe Pro price ID      | `NEXT_PUBLIC_STRIPE_PRO_PRICE_ID`      | No (public)  | Checkout session creation |
+| Resend API key           | `RESEND_API_KEY`                       | YES          | Email send function       |
+| Cron secret              | `CRON_SECRET`                          | YES          | Cron route auth           |
+| Upstash Redis URL        | `UPSTASH_REDIS_REST_URL`               | YES          | Rate limiter              |
+| Upstash Redis token      | `UPSTASH_REDIS_REST_TOKEN`             | YES          | Rate limiter              |
+| PostHog project key      | `NEXT_PUBLIC_POSTHOG_KEY`              | No (public)  | Browser analytics         |
+| PostHog host             | `NEXT_PUBLIC_POSTHOG_HOST`             | No (public)  | Browser analytics         |
 
 ## Warnings
 

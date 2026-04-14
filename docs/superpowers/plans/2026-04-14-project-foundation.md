@@ -731,7 +731,7 @@ import { createBrowserClient } from "@supabase/ssr";
 export function createClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
   );
 }
 ```
@@ -747,7 +747,7 @@ export async function createClient() {
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
       cookies: {
         getAll() {
@@ -828,12 +828,12 @@ describe("env validation", () => {
   });
 
   it("throws when a required server env var is missing", async () => {
-    delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+    delete process.env.SUPABASE_SECRET_KEY;
     await expect(import("./env")).rejects.toThrow();
   });
 
   it("throws when STRIPE_SECRET_KEY does not start with sk_", async () => {
-    process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-key";
+    process.env.SUPABASE_SECRET_KEY = "test-service-key";
     process.env.STRIPE_SECRET_KEY = "not-a-stripe-key";
     await expect(import("./env")).rejects.toThrow();
   });
@@ -856,7 +856,7 @@ import { z } from "zod";
 const envSchema = z.object({
   // ─── Public (safe to expose to browser) ───
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith("pk_"),
   NEXT_PUBLIC_STRIPE_PRO_PRICE_ID: z.string().startsWith("price_"),
   NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
@@ -864,7 +864,7 @@ const envSchema = z.object({
 
   // ─── Server-only (NEVER use in Client Components) ───
   DATABASE_URL: z.string().url(),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  SUPABASE_SECRET_KEY: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().startsWith("sk_"),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_"),
   RESEND_API_KEY: z.string().startsWith("re_"),
@@ -1272,7 +1272,7 @@ cat > .env.local.example << 'EOF'
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-anon-key
 
 # Stripe
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
@@ -1288,7 +1288,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 DATABASE_URL=postgresql://postgres:[password]@[host]:6543/postgres?pgbouncer=true
 
 # Supabase service role key — bypasses RLS — crons and webhooks ONLY
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_SECRET_KEY=your-service-role-key
 
 # Stripe
 STRIPE_SECRET_KEY=sk_test_...
