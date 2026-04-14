@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
+/* ─── Brand: Coral Soft (Sunrise) ─── */
+@theme {
+  /* Colors */
+  --color-primary:     #F43F5E; /* coral — buttons, links, active */
+  --color-secondary:   #8B5CF6; /* purple — badges, accents */
+  --color-accent:      #F59E0B; /* amber — venue/afters badges, warnings */
+  --color-success:     #16A34A; /* green — confirmations */
+
+  --color-background:  #FFFBF7; /* warm cream */
+  --color-surface:     #FFFFFF;
+  --color-surface-alt: #FFF5F0; /* subtle card bg */
+
+  --color-border:      #FECDD3; /* featured card borders */
+  --color-border-muted:#F5F0EB; /* standard card borders */
+
+  --color-text:        #1C1917; /* headings, body */
+  --color-text-muted:  #78716C; /* secondary text */
+  --color-text-light:  #A8A29E; /* labels, hints */
+
+  /* Venue badge — ALWAYS amber, never coral */
+  --color-venue-bg:    #FEF3C7;
+  --color-venue-text:  #B45309;
+
+  /* Typography */
+  --font-heading: var(--font-bricolage), 'Bricolage Grotesque', sans-serif;
+  --font-body:    var(--font-dm-sans), 'DM Sans', sans-serif;
+  --font-sans:    var(--font-dm-sans), 'DM Sans', sans-serif;
+
+  /* Border radii */
+  --radius-card:   14px;
+  --radius-button: 12px;
+  --radius-input:  10px;
+  --radius-badge:  7px;
+}
+
+/* ─── Base styles ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  background-color: #FFFBF7;
+  color: #1C1917;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  background-color: #FFFBF7;
+  color: #1C1917;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Sunrise gradient utility ─── */
+.bg-sunrise {
+  background: linear-gradient(to top, #F59E0B 0%, #FB923C 20%, #F97066 50%, #F43F5E 80%, #E879A0 100%);
+}
+
+/* ─── Card shadow utilities ─── */
+.shadow-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.shadow-primary-glow {
+  box-shadow: 0 2px 12px rgba(244,63,94,0.3);
 }
