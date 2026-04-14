@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, DM_Sans, Geist } from "next/font/google";
+import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -31,7 +29,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", bricolage.variable, dmSans.variable, "font-sans", geist.variable)}
+      className={cn("h-full antialiased", bricolage.variable, dmSans.variable)}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
