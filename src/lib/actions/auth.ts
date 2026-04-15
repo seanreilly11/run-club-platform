@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -119,11 +120,16 @@ export async function sendMagicLink(
       ? (input as { redirectTo: string }).redirectTo
       : "/my-clubs";
 
+  const headersList = await headers();
+  const host = headersList.get("host") ?? "localhost:3000";
+  const protocol = host.startsWith("localhost") ? "http" : "https";
+  const origin = `${protocol}://${host}`;
+
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `/auth/callback?next=${encodeURIComponent(next)}`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
       shouldCreateUser: true,
     },
   });

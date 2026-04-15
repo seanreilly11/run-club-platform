@@ -9,6 +9,10 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("next/headers", () => ({
+  headers: vi.fn().mockResolvedValue(new Map([["host", "localhost:3000"]])),
+}));
+
 // Mock the supabase server client factory
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
