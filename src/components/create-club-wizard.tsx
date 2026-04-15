@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,11 +31,17 @@ export function CreateClubWizard({
   initialUser,
   authComplete,
 }: CreateClubWizardProps) {
-  const [step, setStep] = useState(1);
+  const router = useRouter();
+  // Step 0 = processing screen (shown immediately when returning from auth)
+  const [step, setStep] = useState(authComplete ? 0 : 1);
   const [communityId, setCommunityId] = useState<string | null>(null);
   const [communitySlug, setCommunitySlug] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  // Prevent double-fire in React Strict Mode
+  const createAttemptedRef = useRef(false);
+  // Hold data for retry after error (sessionStorage already cleared by then)
+  const pendingDataRef = useRef<WizardData | null>(null);
 
   const form = useForm<WizardData>({
     resolver: zodResolver(createCommunitySchema),
@@ -55,25 +62,36 @@ export function CreateClubWizard({
     form.setValue("timezone", tz);
 
     if (!authComplete) return;
+    if (createAttemptedRef.current) return;
+    createAttemptedRef.current = true;
 
     // Restore wizard state saved before auth redirect
-    const saved = sessionStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
+    // localStorage (not sessionStorage) — magic link opens in a new tab so
+    // sessionStorage would be empty; localStorage persists across tabs.
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      // No saved data — fall back to step 1 so user can re-enter details
+      setStep(1);
+      return;
+    }
 
     try {
       const data = JSON.parse(saved) as WizardData;
       form.reset(data);
-      sessionStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY);
 
       // Fire community creation now that we're authenticated
       void submitCreate(data);
     } catch {
-      // Ignore parse errors — user can re-fill
+      // Corrupt storage — let user start fresh
+      localStorage.removeItem(STORAGE_KEY);
+      setStep(1);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function submitCreate(data: WizardData) {
+    pendingDataRef.current = data;
     setIsCreating(true);
     setCreateError(null);
 
@@ -84,12 +102,17 @@ export function CreateClubWizard({
       if (result.field === "slug") {
         // Bounce back to step 1 so user can pick a new slug
         setCreateError(result.error);
-        setStep(1);
       } else {
         setCreateError(result.error);
       }
+      // Stay on step 0 (processing/error screen) so user sees the error
       return;
     }
+
+    // Clean ?auth_complete=1 from URL BEFORE advancing step.
+    // This prevents revalidatePath in the server action from triggering a
+    // router refresh that would re-process auth_complete=1 and reset the wizard.
+    router.replace("/create");
 
     setCommunityId(result.data.id);
     setCommunitySlug(result.data.slug);
@@ -107,22 +130,44 @@ export function CreateClubWizard({
       await submitCreate(data);
     } else {
       // Save state, redirect to auth
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       setStep(6);
     }
   }
 
   function progressPercent() {
-    return Math.round((step / TOTAL_STEPS) * 100);
+    return Math.round((Math.max(step, 1) / TOTAL_STEPS) * 100);
   }
 
-  // While restoring after auth redirect, show a loading state
-  if (authComplete && isCreating) {
+  // Step 0: processing screen — shown immediately when returning from auth
+  if (step === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-3">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-[14px] text-text-muted">Setting up your club…</p>
+        <div className="text-center space-y-3 max-w-[300px]">
+          {isCreating || !createError ? (
+            <>
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-[14px] text-text-muted">Setting up your club…</p>
+            </>
+          ) : (
+            <>
+              <p className="text-[14px] font-medium text-text">Something went wrong</p>
+              <p className="text-[13px] text-text-muted">{createError}</p>
+              <button
+                type="button"
+                onClick={() => {
+                  if (pendingDataRef.current) {
+                    void submitCreate(pendingDataRef.current);
+                  } else {
+                    setStep(1);
+                  }
+                }}
+                className="text-[13px] text-primary underline"
+              >
+                Try again
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
