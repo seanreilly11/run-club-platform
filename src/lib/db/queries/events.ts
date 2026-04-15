@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, gte, sql } from "drizzle-orm";
 import { events, eventRsvps } from "@/lib/db/schema";
 import type { EventRsvp } from "@/lib/db/schema";
 
@@ -12,9 +12,9 @@ export type UpcomingEventRow = {
   meetingPointName: string;
   meetingPointLat: string | null;
   meetingPointLng: string | null;
-  postRunVenueName: string | null;
-  postRunVenueUrl: string | null;
-  postRunVenueNotes: string | null;
+  aftersVenueName: string | null;
+  aftersVenueUrl: string | null;
+  aftersVenueNotes: string | null;
   paceGroups: Array<{ name: string; pace: string }> | null;
   isRecurring: boolean;
   goingCount: number;
@@ -25,8 +25,8 @@ export async function getUpcomingEvents(
   communityId: string,
   limit?: number,
 ): Promise<UpcomingEventRow[]> {
-  const goingCount = sql<number>`(SELECT COUNT(*) FROM event_rsvps WHERE event_id = ${events.id} AND status = 'going')::int`;
-  const aftersCount = sql<number>`(SELECT COUNT(*) FROM event_rsvps WHERE event_id = ${events.id} AND joining_social = true)::int`;
+  const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+  const aftersCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.joiningSocial} = true AND ${eventRsvps.status} = 'going')::int`;
 
   const results = await db
     .select({
@@ -38,9 +38,9 @@ export async function getUpcomingEvents(
       meetingPointName: events.meetingPointName,
       meetingPointLat: events.meetingPointLat,
       meetingPointLng: events.meetingPointLng,
-      postRunVenueName: events.postRunVenueName,
-      postRunVenueUrl: events.postRunVenueUrl,
-      postRunVenueNotes: events.postRunVenueNotes,
+      aftersVenueName: events.postRunVenueName,
+      aftersVenueUrl: events.postRunVenueUrl,
+      aftersVenueNotes: events.postRunVenueNotes,
       paceGroups: events.paceGroups,
       isRecurring: events.isRecurring,
       goingCount,
@@ -51,6 +51,7 @@ export async function getUpcomingEvents(
       and(
         eq(events.communityId, communityId),
         eq(events.status, "upcoming"),
+        gte(events.date, new Date()),
       ),
     )
     .orderBy(events.date)
