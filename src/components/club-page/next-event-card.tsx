@@ -103,7 +103,7 @@ export function NextEventCard({
     // Advance to pace step if event has pace groups, else skip to afters or done
     if (event.paceGroups && event.paceGroups.length > 0) {
       setUiStep("pace");
-    } else if (event.aftersVenueName) {
+    } else if (event.postRunVenueName) {
       setUiStep("afters");
     } else {
       setUiStep("done");
@@ -115,7 +115,7 @@ export function NextEventCard({
     // Fire and forget — don't block UI
     void updateRsvpPaceGroup({ eventId: event.id, paceGroup: group, communitySlug: community.slug });
     // Advance
-    if (event.aftersVenueName) {
+    if (event.postRunVenueName) {
       setUiStep("afters");
     } else {
       setUiStep("done");
@@ -123,7 +123,7 @@ export function NextEventCard({
   }
 
   function handleSkipPace() {
-    if (event.aftersVenueName) {
+    if (event.postRunVenueName) {
       setUiStep("afters");
     } else {
       setUiStep("done");
@@ -230,10 +230,10 @@ export function NextEventCard({
           )}
 
           {/* Afters venue */}
-          {event.aftersVenueName && (
+          {event.postRunVenueName && (
             <div className="mb-4">
               <VenueBadge
-                venueName={event.aftersVenueName}
+                venueName={event.postRunVenueName}
                 postRunDefault={community.postRunDefault}
                 variant="card"
               />
@@ -324,7 +324,7 @@ export function NextEventCard({
               )}
 
               {/* ── Step: afters ── */}
-              {uiStep === "afters" && event.aftersVenueName && (
+              {uiStep === "afters" && event.postRunVenueName && (
                 <div
                   className="animate-pop-in rounded-[10px] border p-3"
                   style={{
@@ -333,7 +333,7 @@ export function NextEventCard({
                   }}
                 >
                   <p className="mb-2 text-[13px] font-semibold" style={{ color: "#78350F" }}>
-                    Staying for afters at {event.aftersVenueName}?
+                    Staying for afters at {event.postRunVenueName}?
                   </p>
                   <div className="flex gap-2">
                     <button
@@ -361,8 +361,8 @@ export function NextEventCard({
               {/* ── Step: done ── */}
               {uiStep === "done" && (
                 <div className="flex items-center gap-3 text-[12px]">
-                  {rsvpState.joiningSocial && event.aftersVenueName && (
-                    <span className="text-text-muted">🍺 Afters at {event.aftersVenueName}</span>
+                  {rsvpState.joiningSocial && event.postRunVenueName && (
+                    <span className="text-text-muted">🍺 Afters at {event.postRunVenueName}</span>
                   )}
                   <div className="ml-auto flex gap-3">
                     <button onClick={handleWithdraw} className="text-text-light underline">

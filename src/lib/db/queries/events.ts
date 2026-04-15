@@ -12,9 +12,9 @@ export type UpcomingEventRow = {
   meetingPointName: string;
   meetingPointLat: string | null;
   meetingPointLng: string | null;
-  aftersVenueName: string | null;
-  aftersVenueUrl: string | null;
-  aftersVenueNotes: string | null;
+  postRunVenueName: string | null;
+  postRunVenueUrl: string | null;
+  postRunVenueNotes: string | null;
   paceGroups: Array<{ name: string; pace: string }> | null;
   isRecurring: boolean;
   goingCount: number;
@@ -38,9 +38,9 @@ export async function getUpcomingEvents(
       meetingPointName: events.meetingPointName,
       meetingPointLat: events.meetingPointLat,
       meetingPointLng: events.meetingPointLng,
-      aftersVenueName: events.postRunVenueName,
-      aftersVenueUrl: events.postRunVenueUrl,
-      aftersVenueNotes: events.postRunVenueNotes,
+      postRunVenueName: events.postRunVenueName,
+      postRunVenueUrl: events.postRunVenueUrl,
+      postRunVenueNotes: events.postRunVenueNotes,
       paceGroups: events.paceGroups,
       isRecurring: events.isRecurring,
       goingCount,

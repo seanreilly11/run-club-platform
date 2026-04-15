@@ -50,10 +50,10 @@ export function UpcomingEvents({
                 <p className="mt-0.5 text-[11px] text-text-muted">
                   {formatEventDate(event.date, timezone)}
                 </p>
-                {event.aftersVenueName && (
+                {event.postRunVenueName && (
                   <div className="mt-1.5">
                     <VenueBadge
-                      venueName={event.aftersVenueName}
+                      venueName={event.postRunVenueName}
                       postRunDefault={postRunDefault}
                       variant="small"
                     />
