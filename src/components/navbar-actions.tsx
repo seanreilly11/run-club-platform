@@ -72,7 +72,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
               Log in
             </Link>
             <Button size="sm" className="shadow-primary-glow">
-              <Link href="/login?action=create">Start a club</Link>
+              <Link href="/create">Start a club</Link>
             </Button>
           </div>
         )}
@@ -147,7 +147,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
                 <div className="mt-6">
                   <Button className="w-full shadow-primary-glow">
                     <Link
-                      href="/login?action=create"
+                      href="/create"
                       onClick={() => setMenuOpen(false)}
                     >
                       Start a club — it&apos;s free
