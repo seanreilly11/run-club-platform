@@ -29,9 +29,14 @@ const signUpFormSchema = z.object({
 
 interface AuthFormProps {
   redirectTo?: string;
+  variant?: "standalone" | "embedded";
 }
 
-export function AuthForm({ redirectTo = "/my-clubs" }: AuthFormProps) {
+export function AuthForm({
+  redirectTo = "/my-clubs",
+  variant = "standalone",
+}: AuthFormProps) {
+  const embedded = variant === "embedded";
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [serverError, setServerError] = useState<string | null>(null);
@@ -114,8 +119,11 @@ export function AuthForm({ redirectTo = "/my-clubs" }: AuthFormProps) {
     }
   }
 
-  const heading =
-    step === "email"
+  const heading = embedded
+    ? step === "magic-sent"
+      ? "Check your inbox ✉️"
+      : "Almost there!"
+    : step === "email"
       ? "Welcome to RunClub"
       : step === "existing"
         ? "Welcome back!"
@@ -123,8 +131,11 @@ export function AuthForm({ redirectTo = "/my-clubs" }: AuthFormProps) {
           ? "Let's get you set up!"
           : "Check your inbox ✉️";
 
-  const subheading =
-    step === "email"
+  const subheading = embedded
+    ? step === "magic-sent"
+      ? `We sent a magic link to ${email}`
+      : "Create an account to publish your club."
+    : step === "email"
       ? "Enter your email to get started"
       : step === "existing"
         ? null
@@ -133,28 +144,47 @@ export function AuthForm({ redirectTo = "/my-clubs" }: AuthFormProps) {
           : `We sent a magic link to ${email}`;
 
   return (
-    <div className="w-full max-w-[340px] px-4">
-      {/* Logo */}
-      <div className="flex flex-col items-center mb-6">
-        <div className="w-11 h-11 rounded-md bg-primary flex items-center justify-center mb-3">
-          <Flame className="text-white" size={22} />
+    <div className={cn("w-full", !embedded && "max-w-[340px] px-4")}>
+      {/* Logo — standalone only */}
+      {!embedded && (
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-11 h-11 rounded-md bg-primary flex items-center justify-center mb-3">
+            <Flame className="text-white" size={22} />
+          </div>
+          <h1 className="font-heading text-[22px] font-extrabold text-text">
+            {heading}
+          </h1>
+          {subheading && (
+            <p className="text-[13px] text-text-muted mt-1 text-center">
+              {subheading}
+            </p>
+          )}
         </div>
-        <h1 className="font-heading text-[22px] font-extrabold text-text">
-          {heading}
-        </h1>
-        {subheading && (
-          <p className="text-[13px] text-text-muted mt-1 text-center">
-            {subheading}
-          </p>
-        )}
-      </div>
+      )}
+
+      {/* Heading — embedded only */}
+      {embedded && (
+        <div className="mb-5">
+          <h2 className="font-heading text-[20px] font-bold text-text">
+            {heading}
+          </h2>
+          {subheading && (
+            <p className="text-[13px] text-text-muted mt-1">{subheading}</p>
+          )}
+        </div>
+      )}
 
       {step === "magic-sent" ? (
         <p className="text-center text-sm text-text-muted">
           Click the link in your email to sign in. You can close this tab.
         </p>
       ) : (
-        <div className="bg-surface border border-border-muted rounded-[var(--radius-card)] p-5 shadow-card">
+        <div
+          className={cn(
+            !embedded &&
+              "bg-surface border border-border-muted rounded-[var(--radius-card)] p-5 shadow-card",
+          )}
+        >
           {/* Email step */}
           {step === "email" && (
             <form
