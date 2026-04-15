@@ -15,8 +15,8 @@ import { StepInstagram } from "@/components/create-club/step-instagram";
 import { StepCover } from "@/components/create-club/step-cover";
 import { StepDone } from "@/components/create-club/step-done";
 
-// Wizard data extends the server schema — same shape, same validation
-export type WizardData = z.infer<typeof createCommunitySchema>;
+// Input type: what the form fields actually store (defaults = optional)
+export type WizardData = z.input<typeof createCommunitySchema>;
 
 const STORAGE_KEY = "runclub_onboarding";
 const TOTAL_STEPS = 8;
@@ -42,8 +42,7 @@ export function CreateClubWizard({
       name: "",
       slug: "",
       city: "",
-      vibe: undefined,
-      postRunDefault: "none",
+      postRunDefault: "none" as const,
       instagramHandle: "",
       timezone: "UTC",
     },

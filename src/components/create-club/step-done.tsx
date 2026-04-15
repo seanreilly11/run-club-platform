@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface StepDoneProps {
   clubSlug: string;
@@ -67,11 +68,12 @@ export function StepDone({ clubSlug, clubName }: StepDoneProps) {
             "Share your club page"
           )}
         </Button>
-        <Button type="button" variant="outline" className="w-full" asChild>
-          <Link href={`/dashboard/${clubSlug}`}>
-            Create your first event →
-          </Link>
-        </Button>
+        <Link
+          href={`/dashboard/${clubSlug}`}
+          className={cn(buttonVariants({ variant: "outline" }), "w-full")}
+        >
+          Create your first event →
+        </Link>
       </div>
     </div>
   );

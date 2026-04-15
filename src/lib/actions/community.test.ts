@@ -72,7 +72,7 @@ describe("checkSlugAvailability", () => {
   it("returns error for reserved slug", async () => {
     const result = await checkSlugAvailability("explore");
     expect(result.success).toBe(false);
-    expect(result.error).toMatch(/reserved/i);
+    if (!result.success) expect(result.error).toMatch(/reserved/i);
   });
 });
 
