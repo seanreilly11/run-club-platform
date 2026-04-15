@@ -1,7 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { eq } from "drizzle-orm";
+import { createClient } from "@/lib/supabase/server";
 import {
   emailSchema,
   signInSchema,
@@ -19,13 +20,16 @@ export async function checkEmail(
 ): Promise<ActionResult<{ exists: boolean }>> {
   const parsed = emailSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0].message };
+    return { success: false, error: parsed.error.issues[0].message };
   }
 
-  const admin = createAdminClient();
-  const { data } = await admin.auth.admin.getUserByEmail(parsed.data.email);
+  const existing = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, parsed.data.email))
+    .limit(1);
 
-  return { success: true, data: { exists: !!data.user } };
+  return { success: true, data: { exists: existing.length > 0 } };
 }
 
 // ─── signIn ───────────────────────────────────────────────────────────────────
@@ -35,7 +39,7 @@ export async function signIn(input: unknown): Promise<ActionResult<void>> {
     typeof input === "object" && input !== null ? input : {},
   );
   if (!parsed.success) {
-    const err = parsed.error.errors[0];
+    const err = parsed.error.issues[0];
     return { success: false, error: err.message, field: err.path[0] as string };
   }
 
@@ -63,7 +67,7 @@ export async function signIn(input: unknown): Promise<ActionResult<void>> {
 export async function signUp(input: unknown): Promise<ActionResult<void>> {
   const parsed = signUpSchema.safeParse(input);
   if (!parsed.success) {
-    const err = parsed.error.errors[0];
+    const err = parsed.error.issues[0];
     return { success: false, error: err.message, field: err.path[0] as string };
   }
 
@@ -103,7 +107,7 @@ export async function sendMagicLink(
 ): Promise<ActionResult<void>> {
   const parsed = magicLinkSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.errors[0].message };
+    return { success: false, error: parsed.error.issues[0].message };
   }
 
   const { email } = parsed.data;

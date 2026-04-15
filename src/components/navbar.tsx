@@ -41,7 +41,6 @@ export async function Navbar() {
         <nav className="hidden md:flex items-center gap-5">
           <NavLink href="/explore">Explore</NavLink>
           {userProfile && <NavLink href="/my-clubs">My Clubs</NavLink>}
-          {!userProfile && <NavLink href="/explore">Explore</NavLink>}
         </nav>
 
         {/* Auth actions */}

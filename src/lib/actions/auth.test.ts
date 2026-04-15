@@ -12,23 +12,27 @@ vi.mock("next/cache", () => ({
 // Mock the supabase server client factory
 vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn(),
-  createAdminClient: vi.fn(),
 }));
 
-// Mock drizzle db
+// Mock drizzle db — select returns chainable builder
+const mockDbSelect = vi.fn();
 vi.mock("@/lib/db", () => ({
-  db: { insert: vi.fn() },
+  db: {
+    insert: vi.fn(),
+    get select() {
+      return mockDbSelect;
+    },
+  },
 }));
 
 import { redirect } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { checkEmail, signIn, signUp, sendMagicLink, signOut } from "./auth";
 
 const mockSignInWithPassword = vi.fn();
 const mockSignUp = vi.fn();
 const mockSignInWithOtp = vi.fn();
 const mockSignOut = vi.fn();
-const mockGetUserByEmail = vi.fn();
 
 function makeSupabaseClient() {
   return {
@@ -41,20 +45,19 @@ function makeSupabaseClient() {
   };
 }
 
-function makeAdminClient() {
-  return {
-    auth: {
-      admin: {
-        getUserByEmail: mockGetUserByEmail,
-      },
-    },
+/** Returns a drizzle-like chainable that resolves to `rows` at `.limit()` */
+function makeSelectChain(rows: unknown[]) {
+  const chain = {
+    from: vi.fn().mockReturnThis(),
+    where: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockResolvedValue(rows),
   };
+  return chain;
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(createClient).mockResolvedValue(makeSupabaseClient() as never);
-  vi.mocked(createAdminClient).mockReturnValue(makeAdminClient() as never);
 });
 
 // ─── checkEmail ────────────────────────────────────────────────────────────────
@@ -65,20 +68,14 @@ describe("checkEmail", () => {
     expect(result.success).toBe(false);
   });
 
-  it("returns exists:true when admin API finds user", async () => {
-    mockGetUserByEmail.mockResolvedValue({
-      data: { user: { id: "user-1", email: "test@test.com" } },
-      error: null,
-    });
+  it("returns exists:true when user found in db", async () => {
+    mockDbSelect.mockReturnValue(makeSelectChain([{ id: "user-1" }]));
     const result = await checkEmail({ email: "test@test.com" });
     expect(result).toEqual({ success: true, data: { exists: true } });
   });
 
-  it("returns exists:false when admin API finds no user", async () => {
-    mockGetUserByEmail.mockResolvedValue({
-      data: { user: null },
-      error: { message: "User not found" },
-    });
+  it("returns exists:false when user not in db", async () => {
+    mockDbSelect.mockReturnValue(makeSelectChain([]));
     const result = await checkEmail({ email: "new@test.com" });
     expect(result).toEqual({ success: true, data: { exists: false } });
   });

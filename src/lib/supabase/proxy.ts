@@ -29,5 +29,8 @@ export async function updateSession(request: NextRequest) {
   // Auth checks belong in route layouts.
   await supabase.auth.getUser();
 
+  // Forward pathname so server layouts can read current path via headers().get("x-pathname")
+  supabaseResponse.headers.set("x-pathname", request.nextUrl.pathname);
+
   return supabaseResponse;
 }

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { memberships, communities } from "@/lib/db/schema";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 export type MemberRole = "owner" | "admin" | "member" | "waitlisted";
 
