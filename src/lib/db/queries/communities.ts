@@ -128,7 +128,7 @@ type NextEventRow = {
   title: string;
   date: Date;
   distance_km: string | null;
-  distance_unit: string;
+  distance_unit: "km" | "mi";
   meeting_point_name: string;
   meeting_point_lat: string | null;
   meeting_point_lng: string | null;
@@ -198,7 +198,8 @@ export async function getExploreClubs(
     .from(communities)
     .leftJoin(communityStats, eq(communityStats.communityId, communities.id))
     .where(and(...conditions))
-    .orderBy(proFirst, secondaryOrder);
+    .orderBy(proFirst, secondaryOrder)
+    .limit(200);
 
   if (clubRows.length === 0) {
     return [];
@@ -248,10 +249,7 @@ export async function getExploreClubs(
       )
       .groupBy(eventRsvps.eventId);
 
-    goingCounts = goingRows.map((r) => ({
-      eventId: r.eventId,
-      count: r.count,
-    }));
+    goingCounts = goingRows;
   }
 
   // ── Step 4: Merge ──────────────────────────────────────────────────────────
@@ -270,7 +268,7 @@ export async function getExploreClubs(
           title: nextEventRow.title,
           date: new Date(nextEventRow.date),
           distanceKm: nextEventRow.distance_km,
-          distanceUnit: nextEventRow.distance_unit as "km" | "mi",
+          distanceUnit: nextEventRow.distance_unit,
           meetingPointName: nextEventRow.meeting_point_name,
           meetingPointLat: nextEventRow.meeting_point_lat,
           meetingPointLng: nextEventRow.meeting_point_lng,
@@ -290,8 +288,8 @@ export async function getExploreClubs(
       instagramHandle: club.instagramHandle,
       memberCount: club.memberCount,
       tier: club.tier,
-      locationLat: club.locationLat ?? null,
-      locationLng: club.locationLng ?? null,
+      locationLat: club.locationLat,
+      locationLng: club.locationLng,
       streakRecord: club.streakRecord,
       nextEvent,
     };
