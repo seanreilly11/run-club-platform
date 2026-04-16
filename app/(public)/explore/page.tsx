@@ -29,15 +29,25 @@ interface ExplorePageProps {
   }>;
 }
 
+const VALID_VIBES = ["competitive", "social", "casual"] as const;
+const VALID_AFTERS = ["pub", "coffee", "brunch"] as const;
+const VALID_SORTS = ["members", "soonest", "newest"] as const;
+
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const params = await searchParams;
 
   const filters: ExploreFilters = {
     search: params.q || undefined,
     city: params.city || undefined,
-    vibe: (params.vibe as ExploreFilters["vibe"]) || undefined,
-    afters: (params.afters as ExploreFilters["afters"]) || undefined,
-    sort: (params.sort as ExploreFilters["sort"]) || undefined,
+    vibe: VALID_VIBES.includes(params.vibe as never)
+      ? (params.vibe as ExploreFilters["vibe"])
+      : undefined,
+    afters: VALID_AFTERS.includes(params.afters as never)
+      ? (params.afters as ExploreFilters["afters"])
+      : undefined,
+    sort: VALID_SORTS.includes(params.sort as never)
+      ? (params.sort as ExploreFilters["sort"])
+      : undefined,
   };
 
   const clubs = await getExploreClubs(filters);
@@ -63,7 +73,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <MapWrapper clubs={clubs} selectedCity={selectedCity} />
           </Suspense>
         ) : (
-          <ClubList clubs={clubs} totalCount={clubs.length} />
+          <ClubList clubs={clubs} totalCount={clubs.length} selectedCity={selectedCity} />
         )}
       </div>
     </div>

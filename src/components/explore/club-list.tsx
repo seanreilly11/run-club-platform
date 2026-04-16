@@ -1,12 +1,20 @@
 import { ClubCard } from "@/components/explore/club-card";
 import type { ExploreClubRow } from "@/lib/db/queries/communities";
 
+const CITY_TIMEZONE: Record<string, string> = {
+  sydney: "Australia/Sydney",
+  london: "Europe/London",
+  amsterdam: "Europe/Amsterdam",
+};
+
 interface ClubListProps {
   clubs: ExploreClubRow[];
   totalCount: number;
+  selectedCity?: string;
 }
 
-export function ClubList({ clubs, totalCount }: ClubListProps) {
+export function ClubList({ clubs, totalCount, selectedCity }: ClubListProps) {
+  const timezone = CITY_TIMEZONE[selectedCity?.toLowerCase() ?? ""] ?? "UTC";
   return (
     <div>
       {/* Result count line */}
@@ -50,7 +58,7 @@ export function ClubList({ clubs, totalCount }: ClubListProps) {
       ) : (
         <div className="space-y-2.5">
           {clubs.map((club) => (
-            <ClubCard key={club.id} club={club} timezone="UTC" />
+            <ClubCard key={club.id} club={club} timezone={timezone} />
           ))}
         </div>
       )}
