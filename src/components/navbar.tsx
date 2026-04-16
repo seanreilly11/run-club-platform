@@ -1,15 +1,18 @@
 import Link from "next/link";
 import { Flame } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/nav-link";
 import { NavbarActions } from "@/components/navbar-actions";
 import { getAuthUser } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { isUserAnOwnerOrAdminOfAnyCommunity } from "@/lib/db/queries/memberships";
 
 export async function Navbar() {
   const authUser = await getAuthUser();
+  const showDashboardLink = await isUserAnOwnerOrAdminOfAnyCommunity(
+    authUser?.id,
+  );
 
   let userProfile: { name: string; email: string } | null = null;
   if (authUser) {
@@ -41,6 +44,7 @@ export async function Navbar() {
         <nav className="hidden md:flex items-center gap-5">
           <NavLink href="/explore">Explore</NavLink>
           {userProfile && <NavLink href="/my-clubs">My Clubs</NavLink>}
+          {showDashboardLink && <NavLink href="/dashboard">Dashboard</NavLink>}
         </nav>
 
         {/* Auth actions */}

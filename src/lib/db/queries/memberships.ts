@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { memberships, communities } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 
 export type MemberRole = "owner" | "admin" | "member" | "waitlisted";
 
@@ -49,4 +49,49 @@ export async function getUserMembership(
       tier: row.communityTier,
     },
   };
+}
+
+export async function getUserMemberships(
+  userId: string,
+): Promise<UserMembership[]> {
+  const results = await db
+    .select({
+      role: memberships.role,
+      communityId: communities.id,
+      communitySlug: communities.slug,
+      communityName: communities.name,
+      communityTier: communities.tier,
+      memberCount: communities.memberCount,
+    })
+    .from(memberships)
+    .innerJoin(communities, eq(memberships.communityId, communities.id))
+    .where(eq(memberships.userId, userId));
+
+  return results.map((row) => ({
+    role: row.role,
+    community: {
+      id: row.communityId,
+      slug: row.communitySlug,
+      name: row.communityName,
+      tier: row.communityTier,
+      memberCount: row.memberCount,
+    },
+  }));
+}
+
+export async function isUserAnOwnerOrAdminOfAnyCommunity(
+  userId: string | undefined,
+): Promise<boolean> {
+  if (!userId) return false;
+  const results = await db
+    .select({ role: memberships.role })
+    .from(memberships)
+    .where(
+      and(
+        eq(memberships.userId, userId),
+        inArray(memberships.role, ["owner", "admin"]),
+      ),
+    )
+    .limit(1);
+  return !!results.length;
 }
