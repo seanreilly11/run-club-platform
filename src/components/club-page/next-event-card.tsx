@@ -7,6 +7,7 @@ import { VENUE_EMOJI } from "@/lib/constants";
 import {
   createRsvp,
   updateRsvpAfters,
+  updateRsvpPaceGroup,
   withdrawRsvp,
 } from "@/lib/actions/rsvp";
 import type { UpcomingEventRow } from "@/lib/db/queries/events";
@@ -20,7 +21,12 @@ interface NextEventCardProps {
     Community,
     "id" | "slug" | "name" | "tier" | "themeColor" | "postRunDefault" | "timezone"
   >;
-  initialRsvp: { id: string; status: "going" | "maybe"; joiningSocial: boolean } | null;
+  initialRsvp: {
+    id: string;
+    status: "going" | "maybe";
+    joiningSocial: boolean;
+    paceGroup?: string | null;
+  } | null;
   isLoggedIn: boolean;
 }
 
@@ -51,6 +57,12 @@ export function NextEventCard({
   initialRsvp,
   isLoggedIn,
 }: NextEventCardProps) {
+  const [step, setStep] = useState<"idle" | "pace" | "afters" | "done">(
+    initialRsvp ? "done" : "idle",
+  );
+  const [selectedPace, setSelectedPace] = useState<string | null>(
+    initialRsvp?.paceGroup ?? null,
+  );
   const [rsvp, setRsvp] = useState<RsvpDisplay>(
     initialRsvp
       ? initialRsvp.joiningSocial
@@ -58,7 +70,6 @@ export function NextEventCard({
         : "going"
       : null,
   );
-  const [showAfters, setShowAfters] = useState(false);
   const [goingCount, setGoingCount] = useState(event.goingCount);
   const [rsvpId, setRsvpId] = useState<string | null>(initialRsvp?.id ?? null);
   const [error, setError] = useState<string | null>(null);
@@ -72,13 +83,21 @@ export function NextEventCard({
 
   const venueEmoji = VENUE_EMOJI[community.postRunDefault] ?? "📍";
 
+  function nextAfterPace() {
+    if (event.postRunVenueName) {
+      setStep("afters");
+    } else {
+      setStep("done");
+    }
+  }
+
   async function handleRsvp() {
     if (!isLoggedIn) {
       window.location.href = `/login?redirectTo=/${community.slug}`;
       return;
     }
-    setRsvp("going");
-    setShowAfters(true);
+    const hasPaceGroups = event.paceGroups && event.paceGroups.length > 0;
+    setStep(hasPaceGroups ? "pace" : event.postRunVenueName ? "afters" : "done");
     setGoingCount((c) => c + 1);
 
     const result = await createRsvp({
@@ -88,8 +107,7 @@ export function NextEventCard({
     });
 
     if (!result.success) {
-      setRsvp(null);
-      setShowAfters(false);
+      setStep("idle");
       setGoingCount((c) => c - 1);
       setError(result.error);
     } else {
@@ -97,9 +115,19 @@ export function NextEventCard({
     }
   }
 
-  async function handleAfters(joiningSocial: boolean) {
+  function handlePaceSelect(paceName: string) {
+    setSelectedPace(paceName);
+    void updateRsvpPaceGroup({
+      eventId: event.id,
+      paceGroup: paceName,
+      communitySlug: community.slug,
+    });
+    nextAfterPace();
+  }
+
+  function handleAfters(joiningSocial: boolean) {
     setRsvp(joiningSocial ? "going+social" : "going");
-    setShowAfters(false);
+    setStep("done");
     void updateRsvpAfters({
       eventId: event.id,
       joiningSocial,
@@ -111,7 +139,7 @@ export function NextEventCard({
     const prevRsvp = rsvp;
     const prevCount = goingCount;
     setRsvp(null);
-    setShowAfters(false);
+    setStep("idle");
     setGoingCount((c) => c - 1);
 
     const result = await withdrawRsvp({
@@ -120,12 +148,15 @@ export function NextEventCard({
     });
     if (!result.success) {
       setRsvp(prevRsvp);
+      setStep("done");
       setGoingCount(prevCount);
       setError(result.error);
     } else {
       setRsvpId(null);
     }
   }
+
+  void rsvpId; // used for tracking, suppress unused warning
 
   return (
     <>
@@ -257,7 +288,7 @@ export function NextEventCard({
           {event.meetingPointName}
         </div>
 
-        {/* Pace group pills */}
+        {/* Pace group pills (informational) */}
         {event.paceGroups && event.paceGroups.length > 0 && (
           <div
             style={{
@@ -333,8 +364,8 @@ export function NextEventCard({
           </p>
         )}
 
-        {/* Default state: RSVP button + going count */}
-        {!rsvp && !showAfters && (
+        {/* Idle: RSVP button + going count */}
+        {step === "idle" && (
           <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
             <button
               onClick={handleRsvp}
@@ -370,8 +401,83 @@ export function NextEventCard({
           </div>
         )}
 
-        {/* After clicking I'm in: confirmation + afters prompt */}
-        {showAfters && (
+        {/* Pace group step */}
+        {step === "pace" && event.paceGroups && event.paceGroups.length > 0 && (
+          <div className="slide-down">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "8px 10px",
+                background: "#F0FDF4",
+                borderRadius: "9px",
+                border: "1px solid #BBF7D0",
+                marginBottom: "8px",
+              }}
+            >
+              <span style={{ fontSize: "14px" }}>✓</span>
+              <span
+                style={{ fontSize: "12px", color: "#166534", fontWeight: 600 }}
+              >
+                You&apos;re in! Pick a pace group:
+              </span>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                marginBottom: "8px",
+              }}
+            >
+              {event.paceGroups.map((g) => (
+                <button
+                  key={g.name}
+                  onClick={() => handlePaceSelect(g.name)}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "10px 12px",
+                    borderRadius: "9px",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    background:
+                      selectedPace === g.name ? "#FFE4E6" : "#FFFFFF",
+                    border: `1.5px solid ${selectedPace === g.name ? "#F43F5E" : "#F5F0EB"}`,
+                  }}
+                >
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: "13px", fontWeight: 600 }}>
+                      {g.name}
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#78716C" }}>
+                      {g.pace}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={nextAfterPace}
+              style={{
+                fontSize: "11px",
+                color: "#A8A29E",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                textDecoration: "underline",
+                fontFamily: "inherit",
+              }}
+            >
+              Skip for now →
+            </button>
+          </div>
+        )}
+
+        {/* Afters step */}
+        {step === "afters" && event.postRunVenueName && (
           <div className="slide-down">
             <div
               style={{
@@ -392,68 +498,85 @@ export function NextEventCard({
                 You&apos;re in! 🎉
               </span>
             </div>
-
-            {event.postRunVenueName && (
+            <div
+              style={{
+                background: "linear-gradient(135deg, #FEF3C7, #FEF9C3)",
+                border: "1px solid #FDE68A",
+                borderRadius: "11px",
+                padding: "12px",
+              }}
+            >
               <div
                 style={{
-                  background: "linear-gradient(135deg, #FEF3C7, #FEF9C3)",
-                  border: "1px solid #FDE68A",
-                  borderRadius: "11px",
-                  padding: "12px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  color: "#78350F",
+                  marginBottom: "8px",
                 }}
               >
-                <div
+                {venueEmoji} Staying for afters at {event.postRunVenueName}?
+              </div>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  onClick={() => handleAfters(true)}
                   style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#78350F",
-                    marginBottom: "8px",
+                    flex: 1,
+                    padding: "9px",
+                    background: "#B45309",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "9px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "'Bricolage Grotesque', sans-serif",
                   }}
                 >
-                  {venueEmoji} Staying for afters at {event.postRunVenueName}?
-                </div>
-                <div style={{ display: "flex", gap: "6px" }}>
-                  <button
-                    onClick={() => handleAfters(true)}
-                    style={{
-                      flex: 1,
-                      padding: "9px",
-                      background: "#B45309",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "9px",
-                      fontSize: "12px",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                      fontFamily: "'Bricolage Grotesque', sans-serif",
-                    }}
-                  >
-                    Count me in! {venueEmoji}
-                  </button>
-                  <button
-                    onClick={() => handleAfters(false)}
-                    style={{
-                      padding: "9px 14px",
-                      background: "rgba(255,255,255,0.7)",
-                      color: "#92400E",
-                      border: "1px solid #FDE68A",
-                      borderRadius: "9px",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    Just the run
-                  </button>
-                </div>
+                  Count me in! {venueEmoji}
+                </button>
+                <button
+                  onClick={() => handleAfters(false)}
+                  style={{
+                    padding: "9px 14px",
+                    background: "rgba(255,255,255,0.7)",
+                    color: "#92400E",
+                    border: "1px solid #FDE68A",
+                    borderRadius: "9px",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Just the run
+                </button>
               </div>
-            )}
+            </div>
+          </div>
+        )}
 
-            {/* No afters venue — skip straight */}
-            {!event.postRunVenueName && (
+        {/* Afters step — no venue, skip straight through */}
+        {step === "afters" && !event.postRunVenueName && (
+          <div className="slide-down">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "8px 10px",
+                background: "#F0FDF4",
+                borderRadius: "9px",
+                border: "1px solid #BBF7D0",
+              }}
+            >
+              <span style={{ fontSize: "14px" }}>✓</span>
+              <span
+                style={{ fontSize: "12px", color: "#166534", fontWeight: 600 }}
+              >
+                You&apos;re in! 🎉
+              </span>
               <button
-                onClick={() => { setShowAfters(false); }}
+                onClick={() => setStep("done")}
                 style={{
                   fontSize: "11px",
                   color: "#A8A29E",
@@ -462,16 +585,17 @@ export function NextEventCard({
                   cursor: "pointer",
                   textDecoration: "underline",
                   fontFamily: "inherit",
+                  marginLeft: "auto",
                 }}
               >
                 Done
               </button>
-            )}
+            </div>
           </div>
         )}
 
-        {/* Final confirmed state */}
-        {rsvp && !showAfters && (
+        {/* Done: confirmation + going count + undo */}
+        {step === "done" && (
           <div
             style={{
               display: "flex",
@@ -496,6 +620,19 @@ export function NextEventCard({
                 ? `See you at ${event.postRunVenueName}! 🎉`
                 : "See you at the start line! 🏃"}
             </span>
+            <div style={{ textAlign: "center", minWidth: "44px" }}>
+              <div
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 700,
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
+                  color: "#1C1917",
+                }}
+              >
+                {goingCount}
+              </div>
+              <div style={{ fontSize: "9px", color: "#A8A29E" }}>going</div>
+            </div>
             <button
               onClick={handleUndo}
               style={{

@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { eq, and, gte, sql } from "drizzle-orm";
-import { events, eventRsvps } from "@/lib/db/schema";
+import { events, eventRsvps, users } from "@/lib/db/schema";
 import type { EventRsvp } from "@/lib/db/schema";
 
 export type UpcomingEventRow = {
@@ -65,6 +65,90 @@ export async function getNextEvent(
 ): Promise<UpcomingEventRow | null> {
   const results = await getUpcomingEvents(communityId, 1);
   return results[0] ?? null;
+}
+
+export type EventDetailRow = {
+  id: string;
+  communityId: string;
+  title: string;
+  description: string | null;
+  date: Date;
+  meetingPointName: string;
+  meetingPointLat: string | null;
+  meetingPointLng: string | null;
+  distanceKm: string | null;
+  distanceUnit: "km" | "mi";
+  routeUrl: string | null;
+  paceGroups: Array<{ name: string; pace: string }> | null;
+  postRunVenueName: string | null;
+  postRunVenueUrl: string | null;
+  postRunVenueNotes: string | null;
+  isRecurring: boolean;
+  status: "upcoming" | "completed" | "cancelled";
+  goingCount: number;
+  aftersCount: number;
+};
+
+export type EventAttendeeRow = {
+  userId: string;
+  name: string;
+  paceGroup: string | null;
+  joiningSocial: boolean;
+};
+
+export async function getEventById(
+  eventId: string,
+): Promise<EventDetailRow | null> {
+  const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+  const aftersCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.joiningSocial} = true AND ${eventRsvps.status} = 'going')::int`;
+
+  const rows = await db
+    .select({
+      id: events.id,
+      communityId: events.communityId,
+      title: events.title,
+      description: events.description,
+      date: events.date,
+      meetingPointName: events.meetingPointName,
+      meetingPointLat: events.meetingPointLat,
+      meetingPointLng: events.meetingPointLng,
+      distanceKm: events.distanceKm,
+      distanceUnit: events.distanceUnit,
+      routeUrl: events.routeUrl,
+      paceGroups: events.paceGroups,
+      postRunVenueName: events.postRunVenueName,
+      postRunVenueUrl: events.postRunVenueUrl,
+      postRunVenueNotes: events.postRunVenueNotes,
+      isRecurring: events.isRecurring,
+      status: events.status,
+      goingCount,
+      aftersCount,
+    })
+    .from(events)
+    .where(eq(events.id, eventId))
+    .limit(1);
+
+  return rows[0] ?? null;
+}
+
+export async function getEventAttendees(
+  eventId: string,
+  limit = 20,
+): Promise<EventAttendeeRow[]> {
+  const rows = await db
+    .select({
+      userId: eventRsvps.userId,
+      name: users.name,
+      paceGroup: eventRsvps.paceGroup,
+      joiningSocial: eventRsvps.joiningSocial,
+    })
+    .from(eventRsvps)
+    .innerJoin(users, eq(eventRsvps.userId, users.id))
+    .where(eq(eventRsvps.eventId, eventId))
+    .orderBy(eventRsvps.createdAt)
+    .limit(limit);
+
+  return rows;
 }
 
 export async function getUserRsvpForEvent(
