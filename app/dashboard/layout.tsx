@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getAuthUser } from "@/lib/supabase/server";
+import { Navbar } from "@/components/navbar";
 
 export default async function DashboardRootLayout({
   children,
@@ -13,5 +14,10 @@ export default async function DashboardRootLayout({
   }
 
   // Slug-specific auth checks happen in app/dashboard/[slug]/layout.tsx
-  return <>{children}</>;
+  return (
+    <>
+      <Navbar />
+      <main>{children}</main>
+    </>
+  );
 }
