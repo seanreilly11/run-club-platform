@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(node -e ':*)",
-      "Bash(node -e \"console.log\\(require\\('./node_modules/@hookform/resolvers/zod/package.json'\\).version || 'no version field'\\)\")"
+      "Bash(node -e \"console.log\\(require\\('./node_modules/@hookform/resolvers/zod/package.json'\\).version || 'no version field'\\)\")",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)"
     ]
   }
 }
