@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { eq, and, gte, sql } from "drizzle-orm";
+import { eq, and, gte, sql, desc, isNull } from "drizzle-orm";
 import { events, eventRsvps, users } from "@/lib/db/schema";
 import type { EventRsvp } from "@/lib/db/schema";
 
@@ -19,6 +19,34 @@ export type UpcomingEventRow = {
   isRecurring: boolean;
   goingCount: number;
   aftersCount: number;
+};
+
+export type DashboardEventRow = {
+  id: string;
+  title: string;
+  date: Date;
+  status: "upcoming" | "completed" | "cancelled";
+  goingCount: number;
+  actualAttendance: number | null;
+  actualSocialAttendance: number | null;
+  distanceKm: string | null;
+  distanceUnit: "km" | "mi";
+  postRunVenueName: string | null;
+};
+
+export type UncapturedEventRow = {
+  id: string;
+  title: string;
+  date: Date;
+};
+
+export type AttendanceHistoryRow = {
+  id: string;
+  title: string;
+  date: Date;
+  goingCount: number;
+  actualAttendance: number | null;
+  actualSocialAttendance: number | null;
 };
 
 export async function getUpcomingEvents(
@@ -162,4 +190,73 @@ export async function getUserRsvpForEvent(
     .limit(1);
 
   return results[0] ?? null;
+}
+
+export async function getDashboardEvents(
+  communityId: string,
+): Promise<DashboardEventRow[]> {
+  const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+
+  const rows = await db
+    .select({
+      id: events.id,
+      title: events.title,
+      date: events.date,
+      status: events.status,
+      goingCount,
+      actualAttendance: events.actualAttendance,
+      actualSocialAttendance: events.actualSocialAttendance,
+      distanceKm: events.distanceKm,
+      distanceUnit: events.distanceUnit,
+      postRunVenueName: events.postRunVenueName,
+    })
+    .from(events)
+    .where(eq(events.communityId, communityId))
+    .orderBy(desc(events.date));
+
+  return rows;
+}
+
+export async function getLastUncapturedEvent(
+  communityId: string,
+): Promise<UncapturedEventRow | null> {
+  const rows = await db
+    .select({ id: events.id, title: events.title, date: events.date })
+    .from(events)
+    .where(
+      and(
+        eq(events.communityId, communityId),
+        eq(events.status, "completed"),
+        isNull(events.actualAttendance),
+      ),
+    )
+    .orderBy(desc(events.date))
+    .limit(1);
+
+  return rows[0] ?? null;
+}
+
+export async function getAttendanceHistory(
+  communityId: string,
+  limit = 12,
+): Promise<AttendanceHistoryRow[]> {
+  const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+
+  const rows = await db
+    .select({
+      id: events.id,
+      title: events.title,
+      date: events.date,
+      goingCount,
+      actualAttendance: events.actualAttendance,
+      actualSocialAttendance: events.actualSocialAttendance,
+    })
+    .from(events)
+    .where(
+      and(eq(events.communityId, communityId), eq(events.status, "completed")),
+    )
+    .orderBy(events.date)
+    .limit(limit);
+
+  return rows;
 }
