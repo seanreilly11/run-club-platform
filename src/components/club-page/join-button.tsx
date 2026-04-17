@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { joinClub } from "@/lib/actions/rsvp";
+import { FREE_TIER_MEMBER_LIMIT } from "@/lib/constants";
 
 interface JoinButtonProps {
   communityId: string;
   communitySlug: string;
+  communityName: string;
   memberCount: number;
   tier: "free" | "pro";
   isLoggedIn: boolean;
@@ -15,6 +17,7 @@ interface JoinButtonProps {
 export function JoinButton({
   communityId,
   communitySlug,
+  communityName,
   memberCount,
   tier,
   isLoggedIn,
@@ -27,8 +30,7 @@ export function JoinButton({
 
   if (isMember) return null;
 
-  const atCap = tier === "free" && memberCount >= 30;
-  const buttonLabel = atCap ? "Join waitlist" : "Join club";
+  const atCap = tier === "free" && memberCount >= FREE_TIER_MEMBER_LIMIT;
 
   async function handleJoin() {
     if (!isLoggedIn) {
@@ -52,7 +54,14 @@ export function JoinButton({
 
   if (waitlisted) {
     return (
-      <p className="text-center text-[12px] font-medium" style={{ color: "#B45309" }}>
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "12px",
+          fontWeight: 600,
+          color: "#B45309",
+        }}
+      >
         You&apos;re on the waitlist! 🙋 We&apos;ve let the organizer know.
       </p>
     );
@@ -60,7 +69,14 @@ export function JoinButton({
 
   if (joined) {
     return (
-      <p className="text-center text-[12px] font-medium" style={{ color: "#16A34A" }}>
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: "12px",
+          fontWeight: 600,
+          color: "#16A34A",
+        }}
+      >
         You&apos;re a member! 🎉
       </p>
     );
@@ -71,17 +87,50 @@ export function JoinButton({
       <button
         onClick={handleJoin}
         disabled={isJoining}
-        className="w-full rounded-[12px] border border-primary px-4 py-2.5 text-[14px] font-semibold text-primary bg-white disabled:opacity-60"
+        style={{
+          width: "100%",
+          padding: "11px",
+          background: "#FFFFFF",
+          color: "#F43F5E",
+          border: "1.5px solid #FECDD3",
+          borderRadius: "14px",
+          fontSize: "13px",
+          fontWeight: 700,
+          cursor: isJoining ? "default" : "pointer",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
+          opacity: isJoining ? 0.6 : 1,
+        }}
       >
-        {isJoining ? "Joining..." : buttonLabel}
+        {isJoining
+          ? "Joining..."
+          : atCap
+            ? `Join waitlist`
+            : `Join ${communityName}`}
       </button>
       {atCap && (
-        <p className="mt-1 text-center text-[11px] text-text-muted">
-          This club is at capacity. Join the waitlist and we&apos;ll let the organizer know.
+        <p
+          style={{
+            marginTop: "4px",
+            textAlign: "center",
+            fontSize: "11px",
+            color: "#78716C",
+          }}
+        >
+          This club is at capacity. Join the waitlist and we&apos;ll let the
+          organizer know.
         </p>
       )}
       {error && (
-        <p className="mt-1 text-center text-[12px] text-red-600">{error}</p>
+        <p
+          style={{
+            marginTop: "4px",
+            textAlign: "center",
+            fontSize: "12px",
+            color: "#DC2626",
+          }}
+        >
+          {error}
+        </p>
       )}
     </div>
   );

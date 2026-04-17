@@ -1,8 +1,6 @@
 import { MapPin } from "lucide-react";
-import { VibeBadge } from "@/components/ui/vibe-badge";
 import type { Community, CommunityStats } from "@/lib/db/schema";
 
-// Instagram icon (removed from lucide-react ≥0.277)
 function InstagramIcon({ size = 12 }: { size?: number }) {
   return (
     <svg
@@ -32,7 +30,6 @@ export function Hero({ community, stats }: HeroProps) {
   const sunriseGradient =
     "linear-gradient(to top, #F59E0B 0%, #FB923C 20%, #F97066 50%, #F43F5E 80%, #E879A0 100%)";
 
-  // Pro clubs with themeColor get a derived gradient
   let heroGradient = sunriseGradient;
   if (community.tier === "pro" && community.themeColor) {
     heroGradient = `linear-gradient(to top, ${community.themeColor}, ${community.themeColor}dd)`;
@@ -40,61 +37,105 @@ export function Hero({ community, stats }: HeroProps) {
 
   return (
     <section
-      style={{ background: heroGradient }}
-      className="relative w-full px-5 py-8 pb-10"
+      style={{
+        background: heroGradient,
+        padding: "32px 20px 40px",
+        position: "relative",
+        overflow: "hidden",
+      }}
     >
       {/* Dot pattern overlay */}
       <div
-        className="pointer-events-none absolute inset-0"
         style={{
+          position: "absolute",
+          inset: 0,
+          opacity: 0.06,
           backgroundImage:
-            "radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px)",
-          backgroundSize: "20px 20px",
+            "url(\"data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Ccircle cx='20' cy='20' r='1.5'/%3E%3C/g%3E%3C/svg%3E\")",
         }}
       />
 
-      <div className="relative z-10">
+      <div style={{ position: "relative" }}>
         {/* Location pill */}
         <div
-          className="mb-3 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium text-white"
-          style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
+          style={{
+            display: "inline-flex",
+            gap: "5px",
+            padding: "3px 10px",
+            background: "rgba(255,255,255,0.18)",
+            borderRadius: "16px",
+            marginBottom: "10px",
+            alignItems: "center",
+          }}
         >
-          <MapPin size={10} />
-          {community.city}
+          <MapPin size={11} color="white" />
+          <span style={{ fontSize: "11px", color: "white", fontWeight: 500 }}>
+            {community.city}
+          </span>
         </div>
 
         {/* Club name */}
-        <h1 className="mb-1 font-heading text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-white">
+        <h1
+          style={{
+            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontSize: "26px",
+            fontWeight: 800,
+            color: "white",
+            margin: "0 0 6px 0",
+            lineHeight: 1.1,
+          }}
+        >
           {community.name}
         </h1>
 
         {/* Description */}
         {community.description && (
           <p
-            className="mb-3 text-[13px] leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.85)" }}
+            style={{
+              fontSize: "13px",
+              color: "rgba(255,255,255,0.85)",
+              margin: "0 0 12px 0",
+              lineHeight: 1.5,
+            }}
           >
             {community.description}
           </p>
         )}
 
         {/* Stats row */}
-        <div className="flex flex-wrap items-center gap-3 text-[12px] font-semibold text-white">
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+            fontSize: "12px",
+            color: "white",
+            fontWeight: 600,
+            flexWrap: "wrap",
+          }}
+        >
           <span>👥 {community.memberCount} members</span>
-          <VibeBadge vibe={community.vibe} />
+          <span style={{ opacity: 0.4 }}>·</span>
+          <span>🏃 {community.vibe.charAt(0).toUpperCase() + community.vibe.slice(1)}</span>
           {stats && stats.streakRecord > 0 && (
-            <span>🔥 {stats.streakRecord} wk streak record</span>
+            <>
+              <span style={{ opacity: 0.4 }}>·</span>
+              <span>🔥 {stats.streakRecord}wk streak</span>
+            </>
           )}
           {community.instagramHandle && (
-            <a
-              href={`https://instagram.com/${community.instagramHandle}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1 text-white/90 hover:text-white"
-            >
-              <InstagramIcon size={12} />
-              @{community.instagramHandle}
-            </a>
+            <>
+              <span style={{ opacity: 0.4 }}>·</span>
+              <a
+                href={`https://instagram.com/${community.instagramHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", gap: "4px" }}
+              >
+                <InstagramIcon size={12} />
+                @{community.instagramHandle}
+              </a>
+            </>
           )}
         </div>
       </div>

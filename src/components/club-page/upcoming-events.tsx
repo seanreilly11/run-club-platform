@@ -1,8 +1,8 @@
-import { VenueBadge } from "@/components/ui/venue-badge";
+import { VENUE_EMOJI } from "@/lib/constants";
 import type { UpcomingEventRow } from "@/lib/db/queries/events";
 
 interface UpcomingEventsProps {
-  events: UpcomingEventRow[]; // already sliced — pass events[1..] from page
+  events: UpcomingEventRow[];
   timezone: string;
   postRunDefault: "pub" | "coffee" | "brunch" | "none";
 }
@@ -24,61 +24,108 @@ export function UpcomingEvents({
   timezone,
   postRunDefault,
 }: UpcomingEventsProps) {
+  if (events.length === 0) return null;
+
   return (
     <section>
-      <h2 className="mb-3 font-heading text-[16px] font-bold text-text">
+      <h2
+        style={{
+          fontFamily: "'Bricolage Grotesque', sans-serif",
+          fontSize: "16px",
+          fontWeight: 700,
+          margin: "0 0 10px 0",
+          color: "#1C1917",
+        }}
+      >
         Upcoming runs
       </h2>
 
-      {events.length === 0 ? (
-        <div className="rounded-[14px] border border-border-muted bg-surface p-5 text-center">
-          <p className="text-[14px] text-text-muted">
-            No upcoming runs scheduled yet. Check back soon! 🏃
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {events.map((event) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        {events.map((event) => {
+          const venueEmoji = VENUE_EMOJI[postRunDefault] ?? "📍";
+          return (
             <div
               key={event.id}
-              className="flex items-start justify-between rounded-[14px] border border-border-muted bg-surface px-3 py-3"
+              style={{
+                background: "#FFFFFF",
+                border: "1px solid #F5F0EB",
+                borderRadius: "14px",
+                padding: "12px",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
+                cursor: "pointer",
+              }}
             >
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-heading text-[13px] font-semibold text-text">
-                  {event.title}
-                </p>
-                <p className="mt-0.5 text-[11px] text-text-muted">
-                  {formatEventDate(event.date, timezone)}
-                </p>
-                {event.postRunVenueName && (
-                  <div className="mt-1.5">
-                    <VenueBadge
-                      venueName={event.postRunVenueName}
-                      postRunDefault={postRunDefault}
-                      variant="small"
-                    />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                  <h3
+                    style={{
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      margin: "0 0 2px 0",
+                      color: "#1C1917",
+                    }}
+                  >
+                    {event.title}
+                  </h3>
+                  <span style={{ fontSize: "11px", color: "#78716C" }}>
+                    {formatEventDate(event.date, timezone)}
+                  </span>{" "}
+                  {event.distanceKm && (
+                    <span
+                      style={{
+                        fontSize: "9px",
+                        padding: "1px 5px",
+                        background: "#FFF5F0",
+                        borderRadius: "4px",
+                        color: "#78716C",
+                      }}
+                    >
+                      {event.distanceKm}
+                      {event.distanceUnit}
+                    </span>
+                  )}
+                </div>
+                <div style={{ textAlign: "right", fontSize: "11px" }}>
+                  <div style={{ fontWeight: 600, color: "#1C1917" }}>
+                    {event.goingCount} going
                   </div>
-                )}
+                  {event.aftersCount > 0 && (
+                    <div style={{ color: "#A8A29E" }}>
+                      {event.aftersCount} for afters
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="ml-3 flex shrink-0 flex-col items-end gap-1">
-                {event.distanceKm && (
-                  <span className="rounded-[6px] bg-surface-alt px-1.5 py-0.5 text-[10px] text-text-muted">
-                    {event.distanceKm} {event.distanceUnit}
+
+              {event.postRunVenueName && (
+                <div
+                  style={{
+                    marginTop: "6px",
+                    display: "inline-flex",
+                    gap: "4px",
+                    alignItems: "center",
+                    padding: "3px 8px",
+                    background: "#FEF3C7",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <span style={{ fontSize: "11px" }}>{venueEmoji}</span>
+                  <span
+                    style={{
+                      fontSize: "10px",
+                      color: "#B45309",
+                      fontWeight: 600,
+                    }}
+                  >
+                    Afters at {event.postRunVenueName}
                   </span>
-                )}
-                <span className="text-[11px] font-medium text-primary">
-                  {event.goingCount} going
-                </span>
-                {event.aftersCount > 0 && (
-                  <span className="text-[10px] text-text-muted">
-                    {event.aftersCount} for afters
-                  </span>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </section>
   );
 }

@@ -74,7 +74,7 @@ export default async function ClubPage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <Hero community={community} stats={stats} />
 
-      <div className="space-y-5 px-4 pb-12 pt-4">
+      <div style={{ padding: "16px 20px 28px", display: "flex", flexDirection: "column", gap: "20px" }}>
         {nextEvent ? (
           <NextEventCard
             event={nextEvent}
@@ -101,6 +101,7 @@ export default async function ClubPage({ params }: Props) {
         <JoinButton
           communityId={community.id}
           communitySlug={community.slug}
+          communityName={community.name}
           memberCount={community.memberCount}
           tier={community.tier}
           isLoggedIn={!!user}
@@ -117,10 +118,25 @@ export default async function ClubPage({ params }: Props) {
 
         {community.description && (
           <section>
-            <h2 className="mb-2 font-heading text-[16px] font-bold text-text">
+            <h2
+              style={{
+                fontFamily: "'Bricolage Grotesque', sans-serif",
+                fontSize: "16px",
+                fontWeight: 700,
+                margin: "0 0 8px 0",
+                color: "#1C1917",
+              }}
+            >
               About
             </h2>
-            <p className="text-[12px] leading-relaxed text-text-muted">
+            <p
+              style={{
+                fontSize: "12px",
+                color: "#78716C",
+                lineHeight: 1.7,
+                margin: 0,
+              }}
+            >
               {community.description}
             </p>
           </section>

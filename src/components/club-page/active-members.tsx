@@ -4,60 +4,118 @@ interface ActiveMembersProps {
   members: ActiveMemberRow[];
 }
 
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
+function getInitial(name: string): string {
+  return name.charAt(0).toUpperCase();
 }
 
 export function ActiveMembers({ members }: ActiveMembersProps) {
+  if (members.length === 0) {
+    return (
+      <section>
+        <h2
+          style={{
+            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontSize: "16px",
+            fontWeight: 700,
+            margin: "0 0 10px 0",
+            color: "#1C1917",
+          }}
+        >
+          Active members
+        </h2>
+        <p style={{ fontSize: "13px", color: "#78716C" }}>
+          Be the first to join! 👋
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section>
-      <h2 className="mb-3 font-heading text-[16px] font-bold text-text">
+      <h2
+        style={{
+          fontFamily: "'Bricolage Grotesque', sans-serif",
+          fontSize: "16px",
+          fontWeight: 700,
+          margin: "0 0 10px 0",
+          color: "#1C1917",
+        }}
+      >
         Active members
       </h2>
 
-      {members.length === 0 ? (
-        <p className="text-[13px] text-text-muted">
-          Be the first to join! 👋
-        </p>
-      ) : (
-        <div className="space-y-2">
-          {members.map((member) => (
+      <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+        {members.map((member) => (
+          <div
+            key={member.userId}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 10px",
+              background: "#FFFFFF",
+              border: "1px solid #F5F0EB",
+              borderRadius: "9px",
+            }}
+          >
+            {/* Avatar */}
             <div
-              key={member.userId}
-              className="flex items-center gap-3 rounded-[10px] border border-border-muted bg-surface px-3 py-2"
+              style={{
+                width: "30px",
+                height: "30px",
+                borderRadius: "50%",
+                background: "#FFE4E6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "11px",
+                fontWeight: 600,
+                color: "#F43F5E",
+                flexShrink: 0,
+              }}
             >
-              {/* Avatar */}
-              <div className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
-                {getInitials(member.name)}
+              {getInitial(member.name)}
+            </div>
+
+            {/* Name + pace */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div
+                style={{
+                  fontSize: "12px",
+                  fontWeight: 500,
+                  color: "#1C1917",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {member.name}
               </div>
-              {/* Info */}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[12px] font-medium text-text">
-                  {member.name}
-                </p>
-                <p className="text-[10px] text-text-light">
-                  {member.eventsAttended} runs
-                  {parseFloat(member.totalDistanceKm) > 0 &&
-                    ` · ${parseFloat(member.totalDistanceKm).toFixed(0)} km`}
-                  {member.currentStreak > 0 &&
-                    ` · 🔥 ${member.currentStreak}`}
-                </p>
-              </div>
-              {/* Pace badge */}
               {member.preferredPaceGroup && (
-                <span className="shrink-0 rounded-[6px] bg-surface-alt px-1.5 py-0.5 text-[10px] text-text-muted">
-                  {member.preferredPaceGroup}
-                </span>
+                <div style={{ fontSize: "10px", color: "#A8A29E" }}>
+                  {member.preferredPaceGroup}/km
+                </div>
               )}
             </div>
-          ))}
-        </div>
-      )}
+
+            {/* Streak */}
+            {member.currentStreak > 0 && (
+              <>
+                <span style={{ fontSize: "11px", lineHeight: 1 }}>🔥</span>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    color: "#F43F5E",
+                  }}
+                >
+                  {member.currentStreak}wk
+                </span>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

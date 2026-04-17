@@ -1,17 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { VenueBadge } from "@/components/ui/venue-badge";
+import { VENUE_EMOJI } from "@/lib/constants";
 import {
   createRsvp,
   updateRsvpAfters,
-  updateRsvpPaceGroup,
   withdrawRsvp,
 } from "@/lib/actions/rsvp";
 import type { UpcomingEventRow } from "@/lib/db/queries/events";
-import type { EventRsvp } from "@/lib/db/schema";
 import type { communities } from "@/lib/db/schema";
 
 type Community = typeof communities.$inferSelect;
@@ -22,18 +20,11 @@ interface NextEventCardProps {
     Community,
     "id" | "slug" | "name" | "tier" | "themeColor" | "postRunDefault" | "timezone"
   >;
-  initialRsvp: EventRsvp | null;
+  initialRsvp: { id: string; status: "going" | "maybe"; joiningSocial: boolean } | null;
   isLoggedIn: boolean;
 }
 
-type RsvpState = {
-  status: "going" | "maybe" | null;
-  paceGroup: string | null;
-  joiningSocial: boolean;
-  rsvpId: string | null;
-};
-
-type UiStep = "default" | "confirmed" | "pace" | "afters" | "done";
+type RsvpDisplay = "going+social" | "going" | null;
 
 function formatEventDate(date: Date, timezone: string): string {
   return new Intl.DateTimeFormat("en-GB", {
@@ -60,320 +51,467 @@ export function NextEventCard({
   initialRsvp,
   isLoggedIn,
 }: NextEventCardProps) {
-  const [rsvpState, setRsvpState] = useState<RsvpState>({
-    status: initialRsvp?.status ?? null,
-    paceGroup: initialRsvp?.paceGroup ?? null,
-    joiningSocial: initialRsvp?.joiningSocial ?? false,
-    rsvpId: initialRsvp?.id ?? null,
-  });
-  const [uiStep, setUiStep] = useState<UiStep>(initialRsvp ? "done" : "default");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [rsvp, setRsvp] = useState<RsvpDisplay>(
+    initialRsvp
+      ? initialRsvp.joiningSocial
+        ? "going+social"
+        : "going"
+      : null,
+  );
+  const [showAfters, setShowAfters] = useState(false);
   const [goingCount, setGoingCount] = useState(event.goingCount);
+  const [rsvpId, setRsvpId] = useState<string | null>(initialRsvp?.id ?? null);
+  const [error, setError] = useState<string | null>(null);
 
-  async function handleRsvp(status: "going" | "maybe") {
+  const sunriseGradient =
+    "linear-gradient(to right, #F59E0B, #F97066, #F43F5E)";
+  const accentBg =
+    community.tier === "pro" && community.themeColor
+      ? community.themeColor
+      : sunriseGradient;
+
+  const venueEmoji = VENUE_EMOJI[community.postRunDefault] ?? "📍";
+
+  async function handleRsvp() {
     if (!isLoggedIn) {
       window.location.href = `/login?redirectTo=/${community.slug}`;
       return;
     }
-    // Optimistic update
-    setRsvpState((prev) => ({ ...prev, status }));
-    setUiStep("confirmed");
-    if (status === "going") setGoingCount((c) => c + 1);
-    setIsSubmitting(true);
-    setError(null);
+    setRsvp("going");
+    setShowAfters(true);
+    setGoingCount((c) => c + 1);
 
     const result = await createRsvp({
       eventId: event.id,
-      status,
+      status: "going",
       communitySlug: community.slug,
     });
-    setIsSubmitting(false);
 
     if (!result.success) {
-      // Revert
-      setRsvpState({ status: null, paceGroup: null, joiningSocial: false, rsvpId: null });
-      setUiStep("default");
-      if (status === "going") setGoingCount((c) => c - 1);
+      setRsvp(null);
+      setShowAfters(false);
+      setGoingCount((c) => c - 1);
       setError(result.error);
-      return;
-    }
-    setRsvpState((prev) => ({ ...prev, rsvpId: result.data.rsvpId }));
-
-    // Advance to pace step if event has pace groups, else skip to afters or done
-    if (event.paceGroups && event.paceGroups.length > 0) {
-      setUiStep("pace");
-    } else if (event.postRunVenueName) {
-      setUiStep("afters");
     } else {
-      setUiStep("done");
-    }
-  }
-
-  async function handlePaceSelect(group: string) {
-    setRsvpState((prev) => ({ ...prev, paceGroup: group }));
-    // Fire and forget — don't block UI
-    void updateRsvpPaceGroup({ eventId: event.id, paceGroup: group, communitySlug: community.slug });
-    // Advance
-    if (event.postRunVenueName) {
-      setUiStep("afters");
-    } else {
-      setUiStep("done");
-    }
-  }
-
-  function handleSkipPace() {
-    if (event.postRunVenueName) {
-      setUiStep("afters");
-    } else {
-      setUiStep("done");
+      setRsvpId(result.data.rsvpId);
     }
   }
 
   async function handleAfters(joiningSocial: boolean) {
-    setRsvpState((prev) => ({ ...prev, joiningSocial }));
-    void updateRsvpAfters({ eventId: event.id, joiningSocial, communitySlug: community.slug });
-    setUiStep("done");
+    setRsvp(joiningSocial ? "going+social" : "going");
+    setShowAfters(false);
+    void updateRsvpAfters({
+      eventId: event.id,
+      joiningSocial,
+      communitySlug: community.slug,
+    });
   }
 
-  async function handleWithdraw() {
-    if (!rsvpState.rsvpId) return;
-    const prevState = { ...rsvpState };
-    const prevStep = uiStep;
+  async function handleUndo() {
+    const prevRsvp = rsvp;
     const prevCount = goingCount;
-    // Optimistic
-    setRsvpState({ status: null, paceGroup: null, joiningSocial: false, rsvpId: null });
-    setUiStep("default");
-    if (prevState.status === "going") setGoingCount((c) => c - 1);
+    setRsvp(null);
+    setShowAfters(false);
+    setGoingCount((c) => c - 1);
 
-    const result = await withdrawRsvp({ eventId: event.id, communitySlug: community.slug });
+    const result = await withdrawRsvp({
+      eventId: event.id,
+      communitySlug: community.slug,
+    });
     if (!result.success) {
-      // Revert
-      setRsvpState(prevState);
-      setUiStep(prevStep);
+      setRsvp(prevRsvp);
       setGoingCount(prevCount);
       setError(result.error);
+    } else {
+      setRsvpId(null);
     }
   }
 
-  const sunriseGradient = "linear-gradient(to right, #F59E0B, #F97066, #F43F5E)";
-  const accentStyle =
-    community.tier === "pro" && community.themeColor
-      ? { backgroundColor: community.themeColor }
-      : { background: sunriseGradient };
-
   return (
     <>
-      {/* CSS animations */}
       <style>{`
         @keyframes slideDown {
           from { opacity: 0; transform: translateY(-6px); }
-          to { opacity: 1; transform: translateY(0); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes popIn {
-          from { opacity: 0; transform: scale(0.97); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-slide-down { animation: slideDown 0.3s ease; }
-        .animate-pop-in { animation: popIn 0.25s ease; }
+        .slide-down { animation: slideDown 0.35s ease forwards; }
       `}</style>
 
       <div
-        className="overflow-hidden rounded-[16px] border bg-surface shadow-sm"
-        style={{ borderColor: "#F43F5E", boxShadow: "0 2px 12px rgba(244,63,94,0.12)" }}
+        style={{
+          background: "#FFFFFF",
+          border: "1.5px solid #FECDD3",
+          borderRadius: "16px",
+          padding: "16px",
+          boxShadow: "0 2px 12px rgba(244,63,94,0.06)",
+          position: "relative",
+          overflow: "hidden",
+        }}
       >
-        {/* Accent bar */}
-        <div className="h-[3px] w-full" style={accentStyle} />
+        {/* Sunrise accent bar */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "3px",
+            background: accentBg,
+          }}
+        />
 
-        <div className="p-4">
-          {/* Header row */}
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-              Next Run
+        {/* Header row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+            <span
+              style={{
+                fontSize: "10px",
+                fontWeight: 700,
+                color: "#F43F5E",
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Next run
             </span>
-            <span className="text-[11px] text-text-light">{getDaysUntil(event.date)}</span>
+            <span style={{ fontSize: "10px", color: "#A8A29E" }}>
+              {getDaysUntil(event.date)}
+            </span>
           </div>
+          <Link
+            href={`/${community.slug}/events/${event.id}`}
+            style={{
+              fontSize: "11px",
+              color: "#F43F5E",
+              fontWeight: 600,
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "2px",
+            }}
+          >
+            Details ›
+          </Link>
+        </div>
 
-          {/* Title */}
-          <h2 className="mb-2 font-heading text-[16px] font-bold text-text">{event.title}</h2>
+        {/* Event title */}
+        <h3
+          style={{
+            fontFamily: "'Bricolage Grotesque', sans-serif",
+            fontSize: "16px",
+            fontWeight: 700,
+            margin: "0 0 6px 0",
+            color: "#1C1917",
+          }}
+        >
+          {event.title}
+        </h3>
 
-          {/* Info row: date + distance */}
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <span className="text-[12px] font-medium text-text">
-              {formatEventDate(event.date, community.timezone)}
+        {/* Date + distance */}
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            alignItems: "center",
+            fontSize: "12px",
+            color: "#78716C",
+            marginBottom: "8px",
+            flexWrap: "wrap",
+          }}
+        >
+          <span>{formatEventDate(event.date, community.timezone)}</span>
+          {event.distanceKm && (
+            <span
+              style={{
+                padding: "1px 6px",
+                background: "#FFF5F0",
+                borderRadius: "5px",
+                fontSize: "10px",
+              }}
+            >
+              {event.distanceKm}
+              {event.distanceUnit}
             </span>
-            {event.distanceKm && (
-              <span className="rounded-[6px] bg-surface-alt px-1.5 py-0.5 text-[10px] text-text-muted">
-                {event.distanceKm} {event.distanceUnit}
+          )}
+        </div>
+
+        {/* Meeting point */}
+        <div
+          style={{
+            display: "flex",
+            gap: "5px",
+            alignItems: "center",
+            fontSize: "12px",
+            color: "#78716C",
+            marginBottom: "10px",
+          }}
+        >
+          <MapPin size={12} color="#A8A29E" />
+          {event.meetingPointName}
+        </div>
+
+        {/* Pace group pills */}
+        {event.paceGroups && event.paceGroups.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              gap: "5px",
+              flexWrap: "wrap",
+              marginBottom: "10px",
+            }}
+          >
+            {event.paceGroups.map((pg) => (
+              <span
+                key={pg.name}
+                style={{
+                  fontSize: "10px",
+                  padding: "2px 8px",
+                  background: "#FFF5F0",
+                  color: "#78716C",
+                  borderRadius: "6px",
+                }}
+              >
+                {pg.name}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Afters venue card */}
+        {event.postRunVenueName && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "8px 10px",
+              background: "linear-gradient(135deg, #FEF3C7, #FEF9C3)",
+              border: "1px solid #FDE68A",
+              borderRadius: "9px",
+              marginBottom: "14px",
+            }}
+          >
+            <span>{venueEmoji}</span>
+            <span
+              style={{
+                fontSize: "12px",
+                fontWeight: 600,
+                color: "#78350F",
+                flex: 1,
+              }}
+            >
+              Afters at {event.postRunVenueName}
+            </span>
+            {event.aftersCount > 0 && (
+              <span style={{ fontSize: "10px", color: "#92400E" }}>
+                {event.aftersCount} going
               </span>
             )}
           </div>
+        )}
 
-          {/* Meeting point */}
-          <div className="mb-3 flex items-start gap-1.5">
-            <MapPin size={12} className="mt-0.5 shrink-0 text-text-muted" />
-            <span className="text-[12px] text-text-muted">{event.meetingPointName}</span>
-          </div>
+        {/* Error */}
+        {error && (
+          <p
+            style={{
+              marginBottom: "8px",
+              padding: "8px 12px",
+              background: "#FEF2F2",
+              borderRadius: "8px",
+              fontSize: "12px",
+              color: "#DC2626",
+            }}
+          >
+            {error}
+          </p>
+        )}
 
-          {/* Pace group pills */}
-          {event.paceGroups && event.paceGroups.length > 0 && (
-            <div className="mb-3 flex flex-wrap gap-1.5">
-              {event.paceGroups.map((group) => (
-                <span
-                  key={group.name}
-                  className="rounded-[6px] bg-surface-alt px-2 py-0.5 text-[10px] text-text-muted"
-                >
-                  {group.name} · {group.pace}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Afters venue */}
-          {event.postRunVenueName && (
-            <div className="mb-4">
-              <VenueBadge
-                venueName={event.postRunVenueName}
-                postRunDefault={community.postRunDefault}
-                variant="card"
-              />
-            </div>
-          )}
-
-          {/* Error */}
-          {error && (
-            <p className="mb-2 rounded-[8px] bg-red-50 px-3 py-2 text-[12px] text-red-600">
-              {error}
-            </p>
-          )}
-
-          {/* ── Step: default ── */}
-          {uiStep === "default" && (
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleRsvp("going")}
-                disabled={isSubmitting}
-                className="flex-1 rounded-[12px] bg-primary py-2.5 text-[14px] font-bold text-white disabled:opacity-60"
-                style={{ boxShadow: "0 2px 12px rgba(244,63,94,0.3)" }}
-              >
-                I&apos;m in! 🏃
-              </button>
-              <button
-                onClick={() => handleRsvp("maybe")}
-                disabled={isSubmitting}
-                className="rounded-[12px] border border-primary px-4 py-2.5 text-[13px] font-medium text-primary disabled:opacity-60"
-              >
-                Maybe
-              </button>
-            </div>
-          )}
-
-          {/* ── Steps: confirmed / pace / afters / done ── */}
-          {(uiStep === "confirmed" ||
-            uiStep === "pace" ||
-            uiStep === "afters" ||
-            uiStep === "done") && (
-            <div className="animate-slide-down space-y-3">
-              {/* Confirmation */}
+        {/* Default state: RSVP button + going count */}
+        {!rsvp && !showAfters && (
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <button
+              onClick={handleRsvp}
+              style={{
+                flex: 1,
+                padding: "12px",
+                background: "#F43F5E",
+                color: "white",
+                border: "none",
+                borderRadius: "11px",
+                fontSize: "14px",
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "'Bricolage Grotesque', sans-serif",
+                boxShadow: "0 3px 14px rgba(244,63,94,0.3)",
+              }}
+            >
+              I&apos;m in! 🏃
+            </button>
+            <div style={{ textAlign: "center", minWidth: "44px" }}>
               <div
-                className="flex items-center gap-2 rounded-[10px] border px-3 py-2.5"
-                style={{ backgroundColor: "#F0FDF4", borderColor: "#86EFAC" }}
+                style={{
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  fontFamily: "'Bricolage Grotesque', sans-serif",
+                  color: "#1C1917",
+                }}
               >
-                <span className="text-[18px]">🎉</span>
-                <div>
-                  <p className="text-[13px] font-semibold" style={{ color: "#16A34A" }}>
-                    {rsvpState.status === "going"
-                      ? "You're in!"
-                      : "Maybe — we'll save you a spot"}
-                  </p>
-                  {rsvpState.paceGroup && (
-                    <p className="text-[11px]" style={{ color: "#16A34A" }}>
-                      {rsvpState.paceGroup} group
-                    </p>
-                  )}
-                </div>
-                <span className="ml-auto text-[11px] text-text-light">{goingCount} going</span>
+                {goingCount}
               </div>
+              <div style={{ fontSize: "9px", color: "#A8A29E" }}>going</div>
+            </div>
+          </div>
+        )}
 
-              {/* ── Step: pace ── */}
-              {uiStep === "pace" && event.paceGroups && (
-                <div className="animate-pop-in space-y-2">
-                  <p className="text-[12px] font-medium text-text">Choose your pace group</p>
-                  {event.paceGroups.map((group) => (
-                    <button
-                      key={group.name}
-                      onClick={() => handlePaceSelect(group.name)}
-                      className={cn(
-                        "flex w-full items-center justify-between rounded-[10px] border px-3 py-2 text-left transition-colors",
-                        rsvpState.paceGroup === group.name
-                          ? "border-primary bg-primary/5"
-                          : "border-border-muted bg-surface hover:bg-surface-alt",
-                      )}
-                    >
-                      <span className="text-[13px] font-medium text-text">{group.name}</span>
-                      <span className="text-[11px] text-text-muted">{group.pace}</span>
-                    </button>
-                  ))}
-                  <button
-                    onClick={handleSkipPace}
-                    className="text-[11px] text-text-light underline"
-                  >
-                    Skip
-                  </button>
-                </div>
-              )}
+        {/* After clicking I'm in: confirmation + afters prompt */}
+        {showAfters && (
+          <div className="slide-down">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "8px 10px",
+                background: "#F0FDF4",
+                borderRadius: "9px",
+                border: "1px solid #BBF7D0",
+                marginBottom: "8px",
+              }}
+            >
+              <span style={{ fontSize: "14px" }}>✓</span>
+              <span
+                style={{ fontSize: "12px", color: "#166534", fontWeight: 600 }}
+              >
+                You&apos;re in! 🎉
+              </span>
+            </div>
 
-              {/* ── Step: afters ── */}
-              {uiStep === "afters" && event.postRunVenueName && (
+            {event.postRunVenueName && (
+              <div
+                style={{
+                  background: "linear-gradient(135deg, #FEF3C7, #FEF9C3)",
+                  border: "1px solid #FDE68A",
+                  borderRadius: "11px",
+                  padding: "12px",
+                }}
+              >
                 <div
-                  className="animate-pop-in rounded-[10px] border p-3"
                   style={{
-                    background: "linear-gradient(135deg, #FEF3C7, #FEF9C3)",
-                    borderColor: "#FDE68A",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    color: "#78350F",
+                    marginBottom: "8px",
                   }}
                 >
-                  <p className="mb-2 text-[13px] font-semibold" style={{ color: "#78350F" }}>
-                    Staying for afters at {event.postRunVenueName}?
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleAfters(true)}
-                      className="flex-1 rounded-[10px] py-2 text-[13px] font-semibold text-white"
-                      style={{ backgroundColor: "#B45309" }}
-                    >
-                      Count me in! 🍺
-                    </button>
-                    <button
-                      onClick={() => handleAfters(false)}
-                      className="flex-1 rounded-[10px] border py-2 text-[13px] font-semibold"
-                      style={{
-                        borderColor: "#B45309",
-                        color: "#B45309",
-                        backgroundColor: "white",
-                      }}
-                    >
-                      Just the run
-                    </button>
-                  </div>
+                  {venueEmoji} Staying for afters at {event.postRunVenueName}?
                 </div>
-              )}
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    onClick={() => handleAfters(true)}
+                    style={{
+                      flex: 1,
+                      padding: "9px",
+                      background: "#B45309",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "9px",
+                      fontSize: "12px",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      fontFamily: "'Bricolage Grotesque', sans-serif",
+                    }}
+                  >
+                    Count me in! {venueEmoji}
+                  </button>
+                  <button
+                    onClick={() => handleAfters(false)}
+                    style={{
+                      padding: "9px 14px",
+                      background: "rgba(255,255,255,0.7)",
+                      color: "#92400E",
+                      border: "1px solid #FDE68A",
+                      borderRadius: "9px",
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    Just the run
+                  </button>
+                </div>
+              </div>
+            )}
 
-              {/* ── Step: done ── */}
-              {uiStep === "done" && (
-                <div className="flex items-center gap-3 text-[12px]">
-                  {rsvpState.joiningSocial && event.postRunVenueName && (
-                    <span className="text-text-muted">🍺 Afters at {event.postRunVenueName}</span>
-                  )}
-                  <div className="ml-auto flex gap-3">
-                    <button onClick={handleWithdraw} className="text-text-light underline">
-                      Undo
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+            {/* No afters venue — skip straight */}
+            {!event.postRunVenueName && (
+              <button
+                onClick={() => { setShowAfters(false); }}
+                style={{
+                  fontSize: "11px",
+                  color: "#A8A29E",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  fontFamily: "inherit",
+                }}
+              >
+                Done
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Final confirmed state */}
+        {rsvp && !showAfters && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "10px 12px",
+              background: "#F0FDF4",
+              borderRadius: "10px",
+              border: "1px solid #BBF7D0",
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>✓</span>
+            <span
+              style={{
+                fontSize: "12px",
+                color: "#166534",
+                fontWeight: 600,
+                flex: 1,
+              }}
+            >
+              {rsvp === "going+social" && event.postRunVenueName
+                ? `See you at ${event.postRunVenueName}! 🎉`
+                : "See you at the start line! 🏃"}
+            </span>
+            <button
+              onClick={handleUndo}
+              style={{
+                fontSize: "10px",
+                color: "#A8A29E",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                textDecoration: "underline",
+                fontFamily: "inherit",
+              }}
+            >
+              Undo
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
