@@ -138,6 +138,11 @@
   --color-text-muted:   #78716C; /* secondary text */
   --color-text-light:   #A8A29E; /* labels, hints */
 
+  /* Primary variants */
+  --color-primary-light: #FFF1F2; /* soft coral bg — badges, active states */
+  --color-primary-bg:    #FFE4E6; /* slightly deeper coral bg */
+  --color-primary-hover: #E11D48; /* darker coral for hover */
+
   /* Venue badge — ALWAYS amber, never coral */
   --color-venue-bg:     #FEF3C7;
   --color-venue-text:   #B45309;
