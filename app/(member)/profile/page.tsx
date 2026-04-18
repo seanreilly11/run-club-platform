@@ -27,6 +27,7 @@ export default async function ProfilePage() {
             fontWeight: 700,
             margin: 0,
             color: "#1C1917",
+            padding: "0 12px",
           }}
         >
           Your Profile

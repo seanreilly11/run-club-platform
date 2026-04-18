@@ -177,9 +177,13 @@ export function EventRsvp({
               color: "#1C1917",
             }}
           >
-            {rsvpState !== "none" ? "Your pace group" : "Choose your pace group"}
+            {rsvpState !== "none"
+              ? "Your pace group"
+              : "Choose your pace group"}
           </h3>
-          <p style={{ fontSize: "11px", color: "#A8A29E", margin: "0 0 8px 0" }}>
+          <p
+            style={{ fontSize: "11px", color: "#A8A29E", margin: "0 0 8px 0" }}
+          >
             {rsvpState !== "none"
               ? "Tap to switch — the organizer will see your updated group."
               : "Pick a group so the organizer knows where you'll be"}
@@ -204,7 +208,13 @@ export function EventRsvp({
                     textAlign: "left",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
                     <div
                       style={{
                         width: "18px",
@@ -219,14 +229,31 @@ export function EventRsvp({
                       }}
                     >
                       {selected && (
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="3"
+                        >
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
                       )}
                     </div>
                     <div>
-                      <div style={{ fontSize: "13px", fontWeight: 600, color: "#1C1917" }}>{g.name}</div>
-                      <div style={{ fontSize: "11px", color: "#78716C" }}>{g.pace}</div>
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          color: "#1C1917",
+                        }}
+                      >
+                        {g.name}
+                      </div>
+                      <div style={{ fontSize: "11px", color: "#78716C" }}>
+                        {g.pace}
+                      </div>
                     </div>
                   </div>
                 </button>
@@ -294,23 +321,6 @@ export function EventRsvp({
               >
                 I&apos;m in!
               </button>
-              <button
-                onClick={() => handleRsvp("maybe")}
-                style={{
-                  flex: 1,
-                  padding: "13px",
-                  background: "#FFFFFF",
-                  color: "#78716C",
-                  border: "1.5px solid #F5F0EB",
-                  borderRadius: "12px",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                }}
-              >
-                Maybe
-              </button>
             </div>
             <div
               style={{
@@ -320,7 +330,7 @@ export function EventRsvp({
                 marginTop: "8px",
               }}
             >
-              {goingCount} going · {maybeCount} maybe
+              {goingCount} going
             </div>
           </>
         ) : (
@@ -349,8 +359,8 @@ export function EventRsvp({
               {rsvpState === "going" && joinAfters
                 ? "Going + staying for afters"
                 : rsvpState === "going"
-                ? "Going — just the run"
-                : "Maybe"}
+                  ? "Going — just the run"
+                  : "Maybe"}
             </div>
 
             {/* Change your response label */}
@@ -372,7 +382,6 @@ export function EventRsvp({
               {[
                 { label: "Going + afters", going: true, afters: true },
                 { label: "Just the run", going: true, afters: false },
-                { label: "Maybe", going: false, afters: false },
               ].map((opt) => {
                 const isActive = opt.going
                   ? rsvpState === "going" && joinAfters === opt.afters
@@ -427,12 +436,16 @@ export function EventRsvp({
                         ? `2px solid ${opt.going ? "#F43F5E" : "#F59E0B"}`
                         : "1.5px solid #F5F0EB",
                       background: isActive
-                        ? opt.going ? "#FFF5F0" : "#FFFBEB"
+                        ? opt.going
+                          ? "#FFF5F0"
+                          : "#FFFBEB"
                         : "#FFFFFF",
                       fontSize: "11px",
                       fontWeight: isActive ? 700 : 500,
                       color: isActive
-                        ? opt.going ? "#F43F5E" : "#B45309"
+                        ? opt.going
+                          ? "#F43F5E"
+                          : "#B45309"
                         : "#78716C",
                       cursor: "pointer",
                       fontFamily: "'DM Sans', sans-serif",

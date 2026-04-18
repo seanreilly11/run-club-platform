@@ -85,7 +85,7 @@ export default async function DashboardAnalyticsPage({ params }: Props) {
   ].filter((s) => s.value > 0);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "720px" }}>
       <h2
         style={{
           fontFamily: "'Bricolage Grotesque', sans-serif",

@@ -75,8 +75,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
         display: "flex",
         flexDirection: "column",
         gap: "16px",
-        maxWidth: "640px",
-        margin: "0 auto",
+        maxWidth: "720px",
       }}
     >
       {/* Member progress bar (free tier only) */}
@@ -354,6 +353,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
           communitySlug={slug}
           communityName={communityData.name}
           variant="primary"
+          block
         />
         <ShareClubButton slug={slug} />
       </div>

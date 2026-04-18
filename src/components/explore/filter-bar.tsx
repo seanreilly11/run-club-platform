@@ -27,7 +27,7 @@ function updateParam(
   searchParams: URLSearchParams,
   router: ReturnType<typeof useRouter>,
   key: string,
-  value: string
+  value: string,
 ) {
   const params = new URLSearchParams(searchParams.toString());
   if (value) {
@@ -66,7 +66,7 @@ export function FilterBar({}: FilterBarProps) {
                 onClick={() =>
                   updateParam(searchParams, router, "vibe", option.value)
                 }
-                className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap"
+                className="rounded-full cursor-pointer px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap"
                 style={
                   currentVibe === option.value
                     ? {
@@ -98,7 +98,7 @@ export function FilterBar({}: FilterBarProps) {
                 onClick={() =>
                   updateParam(searchParams, router, "afters", option.value)
                 }
-                className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap"
+                className="rounded-full cursor-pointer px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap"
                 style={
                   currentAfters === option.value
                     ? {
@@ -124,7 +124,7 @@ export function FilterBar({}: FilterBarProps) {
               onChange={(e) =>
                 updateParam(searchParams, router, "sort", e.target.value)
               }
-              className="rounded-[8px] border bg-white px-2 py-1 text-[11px] outline-none"
+              className="rounded-[8px] cursor-pointer border bg-white px-2 py-1 text-[11px] outline-none"
               style={{
                 borderColor: "#F5F0EB",
                 color: "#78716C",
@@ -144,10 +144,10 @@ export function FilterBar({}: FilterBarProps) {
                   searchParams,
                   router,
                   "view",
-                  isMapView ? "" : "map"
+                  isMapView ? "" : "map",
                 )
               }
-              className="rounded-full px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap flex items-center gap-1"
+              className="rounded-full cursor-pointer px-3 py-1 text-[11px] font-semibold transition-colors whitespace-nowrap flex items-center gap-1"
               style={
                 isMapView
                   ? {

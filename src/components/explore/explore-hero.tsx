@@ -11,9 +11,7 @@ const CITIES = [
   { label: "Amsterdam", value: "amsterdam" },
 ] as const;
 
-interface ExploreHeroProps {}
-
-export function ExploreHero({}: ExploreHeroProps) {
+export function ExploreHero() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -73,14 +71,13 @@ export function ExploreHero({}: ExploreHeroProps) {
     <div
       className="w-full py-8 px-6"
       style={{
-        background: "linear-gradient(to top, #F59E0B 0%, #FB923C 20%, #F97066 50%, #F43F5E 80%, #E879A0 100%)",
+        background:
+          "linear-gradient(to top, #F59E0B 0%, #FB923C 20%, #F97066 50%, #F43F5E 80%, #E879A0 100%)",
       }}
     >
       <div className="mx-auto max-w-[720px]">
         {/* Heading */}
-        <h1
-          className="font-heading text-[26px] font-extrabold tracking-[-0.03em] text-white text-center mb-1"
-        >
+        <h1 className="font-heading text-[26px] font-extrabold tracking-[-0.03em] text-white text-center mb-1">
           Find your crew
         </h1>
 
@@ -115,7 +112,7 @@ export function ExploreHero({}: ExploreHeroProps) {
               <button
                 key={city.value || "all"}
                 onClick={() => handleCityChange(city.value)}
-                className="rounded-full px-3.5 py-1 text-[12px] font-semibold transition-colors"
+                className="rounded-full cursor-pointer px-3.5 py-1 text-[12px] font-semibold transition-colors"
                 style={{
                   background: isActive ? "white" : "rgba(255,255,255,0.2)",
                   color: isActive ? "#F43F5E" : "white",

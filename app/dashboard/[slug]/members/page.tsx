@@ -18,7 +18,7 @@ export default async function DashboardMembersPage({ params }: Props) {
   const activeMembers = members.filter((m) => m.role !== "waitlisted");
 
   return (
-    <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "720px" }}>
       {/* Header */}
       <div style={{ marginBottom: "16px" }}>
         <h2

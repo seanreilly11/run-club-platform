@@ -10,14 +10,17 @@ interface Props {
 
 export default async function TeamPage({ params }: Props) {
   const { slug } = await params;
-  const [community, user] = await Promise.all([getClubBySlug(slug), getAuthUser()]);
+  const [community, user] = await Promise.all([
+    getClubBySlug(slug),
+    getAuthUser(),
+  ]);
   if (!community) notFound();
   if (!user) redirect("/login");
 
   const members = await getTeamMembers(community.id);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "720px" }}>
       <h2
         style={{
           fontFamily: "'Bricolage Grotesque', sans-serif",

@@ -64,7 +64,7 @@ export default async function DashboardSettingsPage({ params }: Props) {
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
+    <div style={{ padding: "20px", maxWidth: "720px" }}>
       <h2
         style={{
           fontFamily: "'Bricolage Grotesque', sans-serif",

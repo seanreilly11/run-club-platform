@@ -32,7 +32,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
           <div className="relative">
             <button
               onClick={() => setDropdownOpen((o) => !o)}
-              className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="w-8 h-8 rounded-full cursor-pointer bg-primary flex items-center justify-center text-white text-xs font-bold focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               aria-label="Account menu"
             >
               {getInitials(user.name)}
@@ -46,7 +46,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
                 <div className="absolute right-0 top-10 z-20 w-44 bg-surface border border-border-muted rounded-[var(--radius-card)] shadow-card py-1">
                   <Link
                     href="/profile"
-                    className="block px-3 py-2 text-sm text-text hover:bg-surface-alt"
+                    className="block px-3 py-2 text-sm text-text hover:bg-surface-alt rounded-tl-[var(--radius-card)] rounded-tr-[var(--radius-card)]"
                     onClick={() => setDropdownOpen(false)}
                   >
                     Profile
@@ -54,7 +54,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
                   <form action={signOut}>
                     <button
                       type="submit"
-                      className="w-full text-left px-3 py-2 text-sm text-text hover:bg-surface-alt"
+                      className="w-full text-left px-3 py-2 text-sm text-text cursor-pointer hover:bg-surface-alt rounded-bl-[var(--radius-card)] rounded-br-[var(--radius-card)]"
                     >
                       Log out
                     </button>
@@ -136,7 +136,7 @@ export function NavbarActions({ user }: NavbarActionsProps) {
                 <form action={signOut} className="mt-4">
                   <button
                     type="submit"
-                    className="text-sm text-text-muted underline"
+                    className="text-sm text-text-muted underline cursor-pointer"
                   >
                     Log out
                   </button>
@@ -146,17 +146,14 @@ export function NavbarActions({ user }: NavbarActionsProps) {
               <>
                 <Link
                   href="/login"
-                  className="py-3 text-lg font-medium text-text border-b border-border-muted"
+                  className="py-3 text-lg font-medium text-text cursor-pointer border-b border-border-muted"
                   onClick={() => setMenuOpen(false)}
                 >
                   Log in
                 </Link>
                 <div className="mt-6">
                   <Button className="w-full shadow-primary-glow">
-                    <Link
-                      href="/create"
-                      onClick={() => setMenuOpen(false)}
-                    >
+                    <Link href="/create" onClick={() => setMenuOpen(false)}>
                       Start a club — it&apos;s free
                     </Link>
                   </Button>

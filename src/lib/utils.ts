@@ -66,3 +66,21 @@ export function formatRelativeDate(date: Date, timezone: string): string {
     minute: "2-digit",
   });
 }
+
+export function formatDate(timezone: string, date: Date) {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+  }).format(date);
+}
+
+export function formatTime(timezone: string, date: Date) {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: timezone,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+}
