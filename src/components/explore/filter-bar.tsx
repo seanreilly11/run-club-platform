@@ -5,16 +5,16 @@ import { Map } from "lucide-react";
 
 const VIBE_OPTIONS = [
   { label: "All", value: "" },
-  { label: "🤝 Social", value: "social" },
-  { label: "🏆 Competitive", value: "competitive" },
-  { label: "😎 Casual", value: "casual" },
+  { label: "Social", value: "social" },
+  { label: "Competitive", value: "competitive" },
+  { label: "Casual", value: "casual" },
 ] as const;
 
 const AFTERS_OPTIONS = [
   { label: "Any", value: "" },
-  { label: "🍺 Pub", value: "pub" },
-  { label: "☕ Café", value: "coffee" },
-  { label: "🥐 Brunch", value: "brunch" },
+  { label: "Pub", value: "pub" },
+  { label: "Café", value: "coffee" },
+  { label: "Brunch", value: "brunch" },
 ] as const;
 
 const SORT_OPTIONS = [

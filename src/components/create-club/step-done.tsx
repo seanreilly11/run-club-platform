@@ -39,7 +39,7 @@ export function StepDone({ clubSlug, clubName }: StepDoneProps) {
     <div className="space-y-6 text-center">
       <div className="space-y-2">
         <h1 className="font-heading text-[26px] font-extrabold text-text">
-          Your club is live! 🎉
+          Your club is live!
         </h1>
         <p className="text-[14px] text-text-muted">
           <span className="font-semibold text-text">{clubName}</span> is ready

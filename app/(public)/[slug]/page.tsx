@@ -97,7 +97,7 @@ export default async function ClubPage({ params }: Props) {
         ) : (
           <div className="rounded-[14px] border border-border-muted bg-surface p-5 text-center">
             <p className="text-[14px] text-text-muted">
-              No upcoming runs yet. Check back soon! 🏃
+              No upcoming runs yet. Check back soon!
             </p>
           </div>
         )}
@@ -115,7 +115,6 @@ export default async function ClubPage({ params }: Props) {
         {allUpcoming.length > 1 && (
           <UpcomingEvents
             events={allUpcoming.slice(1)}
-            postRunDefault={community.postRunDefault}
             timezone={community.timezone}
           />
         )}

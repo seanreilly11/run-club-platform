@@ -20,24 +20,17 @@ export const RESERVED_SLUGS = [
 ] as const;
 
 export const VIBE_OPTIONS = [
-  { value: "competitive", label: "Competitive", emoji: "🏆" },
-  { value: "social", label: "Social", emoji: "🤝" },
-  { value: "casual", label: "Casual", emoji: "😎" },
+  { value: "competitive", label: "Competitive" },
+  { value: "social", label: "Social" },
+  { value: "casual", label: "Casual" },
 ] as const;
 
 export const POST_RUN_OPTIONS = [
-  { value: "pub", label: "Pub", emoji: "🍺" },
-  { value: "coffee", label: "Café", emoji: "☕" },
-  { value: "brunch", label: "Brunch", emoji: "🥐" },
-  { value: "none", label: "We don't do afters", emoji: "🚫" },
+  { value: "pub", label: "Pub" },
+  { value: "coffee", label: "Café" },
+  { value: "brunch", label: "Brunch" },
+  { value: "none", label: "We don't do afters" },
 ] as const;
-
-export const VENUE_EMOJI: Record<string, string> = {
-  pub: "🍺",
-  coffee: "☕",
-  brunch: "🥐",
-  none: "📍",
-};
 
 export const DISTANCE_UNITS = ["km", "mi"] as const;
 

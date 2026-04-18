@@ -60,11 +60,9 @@ const hintStyle = { fontSize: "11px", color: t.textLight, marginTop: "4px" };
 const errorStyle = { fontSize: "11px", color: t.primary, marginTop: "4px" };
 
 function SectionHeader({
-  icon,
   title,
   number,
 }: {
-  icon: string;
   title: string;
   number: number;
 }) {
@@ -95,7 +93,6 @@ function SectionHeader({
       >
         {number}
       </div>
-      <span style={{ fontSize: "12px", marginRight: "2px" }}>{icon}</span>
       <span
         style={{
           fontSize: "15px",
@@ -196,9 +193,9 @@ export function CreateEventModal({
       distanceUnit: "km",
       isRecurring: false,
       paceGroups: [
-        { name: "🐇 Fast", pace: "< 5:00/km" },
-        { name: "🏃 Steady", pace: "5:00 – 6:00/km" },
-        { name: "🐢 Easy", pace: "6:00+/km" },
+        { name: "Fast", pace: "< 5:00/km" },
+        { name: "Steady", pace: "5:00 – 6:00/km" },
+        { name: "Easy", pace: "6:00+/km" },
       ],
     },
   });
@@ -228,14 +225,6 @@ export function CreateEventModal({
         }).format(new Date(`${watchedDate}T${watchedTime}`))
       : "Wed 26 Mar · 6:30 PM";
 
-  const venueEmoji =
-    venueType === "pub"
-      ? "🍺"
-      : venueType === "cafe"
-        ? "☕"
-        : venueType === "brunch"
-          ? "🥐"
-          : "📍";
 
   async function onSubmit(data: FormData) {
     setSubmitting(true);
@@ -334,7 +323,7 @@ export function CreateEventModal({
           style={{ flex: 1, overflowY: "auto", padding: "24px" }}
         >
           {/* ===== SECTION 1: EVENT DETAILS ===== */}
-          <SectionHeader icon="📋" title="Event details" number={1} />
+          <SectionHeader title="Event details" number={1} />
 
           <div style={fieldWrap}>
             <label style={labelStyle}>
@@ -463,7 +452,7 @@ export function CreateEventModal({
 
           {/* ===== SECTION 2: ROUTE ===== */}
           <div style={{ marginTop: "8px" }}>
-            <SectionHeader icon="🗺️" title="Route & meeting point" number={2} />
+            <SectionHeader title="Route & meeting point" number={2} />
           </div>
 
           <div style={fieldWrap}>
@@ -556,7 +545,6 @@ export function CreateEventModal({
               cursor: "pointer",
             }}
           >
-            <span style={{ fontSize: "20px" }}>📍</span>
             <span style={{ fontSize: "12px", color: t.textMuted, fontWeight: 500 }}>
               Click to set meeting point on map
             </span>
@@ -566,7 +554,7 @@ export function CreateEventModal({
           </div>
 
           {/* ===== SECTION 3: PACE GROUPS ===== */}
-          <SectionHeader icon="🏃" title="Pace groups" number={3} />
+          <SectionHeader title="Pace groups" number={3} />
 
           <div style={{ marginBottom: "16px" }}>
             {paceFields.map((field, i) => (
@@ -587,7 +575,7 @@ export function CreateEventModal({
                 <div style={{ flex: 1 }}>
                   <input
                     {...register(`paceGroups.${i}.name`)}
-                    placeholder="Group name (e.g. 🐇 Fast)"
+                    placeholder="Group name (e.g. Fast)"
                     style={{
                       width: "100%",
                       padding: "6px 0",
@@ -667,7 +655,7 @@ export function CreateEventModal({
           </div>
 
           {/* ===== SECTION 4: AFTERS ===== */}
-          <SectionHeader icon="🍻" title="Afters" number={4} />
+          <SectionHeader title="Afters" number={4} />
 
           <Toggle
             checked={showAfters}
@@ -701,10 +689,10 @@ export function CreateEventModal({
                 </label>
                 <div style={{ display: "flex", gap: "6px" }}>
                   {[
-                    { id: "pub", emoji: "🍺", label: "Pub" },
-                    { id: "cafe", emoji: "☕", label: "Café" },
-                    { id: "brunch", emoji: "🥐", label: "Brunch" },
-                    { id: "other", emoji: "📍", label: "Other" },
+                    { id: "pub", label: "Pub" },
+                    { id: "cafe", label: "Café" },
+                    { id: "brunch", label: "Brunch" },
+                    { id: "other", label: "Other" },
                   ].map((vt) => (
                     <button
                       key={vt.id}
@@ -727,13 +715,8 @@ export function CreateEventModal({
                           venueType === vt.id
                             ? "1px solid #B45309"
                             : "1px solid #FDE68A",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        gap: "2px",
                       }}
                     >
-                      <span style={{ fontSize: "16px" }}>{vt.emoji}</span>
                       {vt.label}
                     </button>
                   ))}
@@ -968,7 +951,6 @@ export function CreateEventModal({
                     marginBottom: "10px",
                   }}
                 >
-                  <span style={{ fontSize: "12px" }}>{venueEmoji}</span>
                   <span
                     style={{
                       fontSize: "11px",
@@ -992,7 +974,7 @@ export function CreateEventModal({
                   fontFamily: "'Bricolage Grotesque', sans-serif",
                 }}
               >
-                I&apos;m in! 🏃
+                I&apos;m in!
               </div>
             </div>
           </div>

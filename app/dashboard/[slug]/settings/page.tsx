@@ -8,7 +8,6 @@ interface Props {
 }
 
 interface SettingsRow {
-  icon: string;
   label: string;
   description: string;
   href?: string;
@@ -25,19 +24,16 @@ export default async function DashboardSettingsPage({ params }: Props) {
 
   const rows: SettingsRow[] = [
     {
-      icon: "📝",
       label: "Club details",
       description: "Name, description, city, vibe, afters venue",
       isClubDetails: true,
     },
     {
-      icon: "👥",
       label: "Team",
       description: "Manage admins and invitations",
       href: `/dashboard/${slug}/settings/team`,
     },
     {
-      icon: "💳",
       label: "Billing & subscription",
       description: isFree
         ? "Free plan · Upgrade to Pro"
@@ -45,14 +41,12 @@ export default async function DashboardSettingsPage({ params }: Props) {
       href: `/dashboard/${slug}/settings/billing`,
     },
     {
-      icon: "🎨",
       label: "Custom branding",
       description: "Theme colour for your club page",
       href: `/dashboard/${slug}/settings/branding`,
       proOnly: true,
     },
     {
-      icon: "🔔",
       label: "Notifications",
       description: "Email preferences for reminders and digests",
       href: `/dashboard/${slug}/settings/notifications`,

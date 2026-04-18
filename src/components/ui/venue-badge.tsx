@@ -7,21 +7,13 @@ interface VenueBadgeProps {
   className?: string;
 }
 
-const emojiMap: Record<VenueBadgeProps["postRunDefault"], string> = {
-  pub: "🍺",
-  coffee: "☕",
-  brunch: "🥐",
-  none: "📍",
-};
-
 export function VenueBadge({
   venueName,
-  postRunDefault,
+  postRunDefault: _postRunDefault,
   variant = "small",
   className,
 }: VenueBadgeProps) {
-  const emoji = emojiMap[postRunDefault];
-  const label = `${emoji} Afters at ${venueName}`;
+  const label = `Afters at ${venueName}`;
 
   if (variant === "card") {
     return (

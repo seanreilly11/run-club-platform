@@ -183,18 +183,15 @@ export function EventsList({ events, communitySlug, communityTimezone }: EventsL
                   >
                     {[
                       {
-                        icon: "✏️",
                         label: "Edit event",
                         onClick: () => { setOpenMenuId(null); setEditingEvent(event); },
                       },
                       {
-                        icon: "📋",
                         label: "Duplicate",
                         onClick: () => handleDuplicate(event),
                       },
                       ...(event.status === "upcoming"
                         ? [{
-                            icon: "🚫",
                             label: "Cancel event",
                             onClick: () => { setOpenMenuId(null); setEditingEvent(event); },
                             danger: true,
@@ -207,7 +204,6 @@ export function EventsList({ events, communitySlug, communityTimezone }: EventsL
                         style={{
                           display: "flex",
                           alignItems: "center",
-                          gap: "8px",
                           width: "100%",
                           padding: "10px 14px",
                           background: "none",
@@ -219,7 +215,6 @@ export function EventsList({ events, communitySlug, communityTimezone }: EventsL
                           fontFamily: "'DM Sans', sans-serif",
                         }}
                       >
-                        <span>{item.icon}</span>
                         {item.label}
                       </button>
                     ))}

@@ -3,18 +3,17 @@ import { cn } from "@/lib/utils";
 import type { MemberRole } from "@/lib/db/queries/memberships";
 
 interface SidebarItem {
-  emoji: string;
   label: string;
   section: string;
   proOnly?: boolean;
 }
 
 const NAV_ITEMS: SidebarItem[] = [
-  { emoji: "🏠", label: "Overview", section: "" },
-  { emoji: "📅", label: "Events", section: "events" },
-  { emoji: "👥", label: "Members", section: "members" },
-  { emoji: "📊", label: "Analytics", section: "analytics", proOnly: true },
-  { emoji: "⚙️", label: "Settings", section: "settings" },
+  { label: "Overview", section: "" },
+  { label: "Events", section: "events" },
+  { label: "Members", section: "members" },
+  { label: "Analytics", section: "analytics", proOnly: true },
+  { label: "Settings", section: "settings" },
 ];
 
 interface DashboardSidebarProps {
@@ -51,7 +50,7 @@ export function DashboardSidebar({
           </p>
         ) : (
           <span className="inline-flex items-center rounded-md bg-[#FFF1F2] text-primary text-[9px] font-semibold px-1.5 py-0.5 mt-0.5">
-            ✨ Pro
+            Pro
           </span>
         )}
       </div>
@@ -86,9 +85,8 @@ export function DashboardSidebar({
                 isLocked && "opacity-50",
               )}
             >
-              <span>{item.emoji}</span>
               <span>{item.label}</span>
-              {isLocked && <span className="ml-auto text-[9px]">🔒</span>}
+              {isLocked && <span className="ml-auto text-[9px]">PRO</span>}
             </Link>
           );
         })}

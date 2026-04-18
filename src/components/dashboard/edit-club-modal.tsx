@@ -42,17 +42,17 @@ function labelStyle(): React.CSSProperties {
   };
 }
 
-const VIBE_OPTIONS: { value: "competitive" | "social" | "casual"; label: string; emoji: string }[] = [
-  { value: "competitive", label: "Competitive", emoji: "🏆" },
-  { value: "social", label: "Social", emoji: "🎉" },
-  { value: "casual", label: "Casual", emoji: "😊" },
+const VIBE_OPTIONS: { value: "competitive" | "social" | "casual"; label: string }[] = [
+  { value: "competitive", label: "Competitive" },
+  { value: "social", label: "Social" },
+  { value: "casual", label: "Casual" },
 ];
 
-const AFTERS_OPTIONS: { value: "pub" | "coffee" | "brunch" | "none"; label: string; emoji: string }[] = [
-  { value: "pub", label: "Pub", emoji: "🍺" },
-  { value: "coffee", label: "Coffee", emoji: "☕" },
-  { value: "brunch", label: "Brunch", emoji: "🥐" },
-  { value: "none", label: "None", emoji: "🚫" },
+const AFTERS_OPTIONS: { value: "pub" | "coffee" | "brunch" | "none"; label: string }[] = [
+  { value: "pub", label: "Pub" },
+  { value: "coffee", label: "Coffee" },
+  { value: "brunch", label: "Brunch" },
+  { value: "none", label: "None" },
 ];
 
 export function EditClubModal({ community, onClose }: EditClubModalProps) {
@@ -265,8 +265,7 @@ export function EditClubModal({ community, onClose }: EditClubModalProps) {
                   onClick={() => setVibe(opt.value)}
                   style={selectorBtnStyle(vibe === opt.value)}
                 >
-                  <div style={{ fontSize: "16px", marginBottom: "2px" }}>{opt.emoji}</div>
-                  <div>{opt.label}</div>
+                  {opt.label}
                 </button>
               ))}
             </div>
@@ -282,8 +281,7 @@ export function EditClubModal({ community, onClose }: EditClubModalProps) {
                   onClick={() => setPostRunDefault(opt.value)}
                   style={selectorBtnStyle(postRunDefault === opt.value)}
                 >
-                  <div style={{ fontSize: "16px", marginBottom: "2px" }}>{opt.emoji}</div>
-                  <div>{opt.label}</div>
+                  {opt.label}
                 </button>
               ))}
             </div>

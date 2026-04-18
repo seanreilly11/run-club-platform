@@ -32,7 +32,7 @@ export function MemberProgress({
   if (isAtCap) {
     label = (
       <span style={{ fontSize: "11px", color: "#F43F5E", fontWeight: 600 }}>
-        🔒 Club is full — new members are being waitlisted.{" "}
+        Club is full — new members are being waitlisted.{" "}
         <Link
           href={`/dashboard/${communitySlug}/settings`}
           style={{ textDecoration: "underline" }}
@@ -83,7 +83,7 @@ export function MemberProgress({
               color: "#1C1917",
             }}
           >
-            👥 {memberCount} / {FREE_TIER_MEMBER_LIMIT} members
+            {memberCount} / {FREE_TIER_MEMBER_LIMIT} members
           </span>
           <span style={{ fontSize: "10px", color: "#A8A29E" }}>Free plan</span>
         </div>
@@ -133,7 +133,7 @@ export function MemberProgress({
                 marginBottom: "2px",
               }}
             >
-              🙋 {waitlistedCount}{" "}
+              {waitlistedCount}{" "}
               {waitlistedCount === 1 ? "person is" : "people are"} waiting to
               join
             </div>

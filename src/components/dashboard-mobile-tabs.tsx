@@ -5,17 +5,16 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface MobileTab {
-  emoji: string;
   label: string;
   section: string;
 }
 
 const TABS: MobileTab[] = [
-  { emoji: "🏠", label: "Overview", section: "" },
-  { emoji: "📅", label: "Events", section: "events" },
-  { emoji: "👥", label: "Members", section: "members" },
-  { emoji: "📊", label: "Analytics", section: "analytics" },
-  { emoji: "⚙️", label: "Settings", section: "settings" },
+  { label: "Overview", section: "" },
+  { label: "Events", section: "events" },
+  { label: "Members", section: "members" },
+  { label: "Analytics", section: "analytics" },
+  { label: "Settings", section: "settings" },
 ];
 
 interface DashboardMobileTabsProps {
@@ -59,7 +58,6 @@ export function DashboardMobileTabs({
                 : "text-text-muted border-transparent hover:text-text",
             )}
           >
-            <span>{tab.emoji}</span>
             <span>{tab.label}</span>
           </Link>
         );

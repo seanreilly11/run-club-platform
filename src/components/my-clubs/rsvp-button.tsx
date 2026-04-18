@@ -64,7 +64,7 @@ export function MyClubsRsvpButton({
               textAlign: "right",
             }}
           >
-            + afters 🍺
+            + afters
           </div>
         )}
       </div>
@@ -90,7 +90,7 @@ export function MyClubsRsvpButton({
           whiteSpace: "nowrap",
         }}
       >
-        {loading ? "..." : "I'm in! 🏃"}
+        {loading ? "..." : "I'm in!"}
       </button>
     </span>
   );

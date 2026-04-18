@@ -292,7 +292,7 @@ export function EventRsvp({
                   boxShadow: "0 3px 14px rgba(244,63,94,0.3)",
                 }}
               >
-                I&apos;m in! 🏃
+                I&apos;m in!
               </button>
               <button
                 onClick={() => handleRsvp("maybe")}
@@ -347,9 +347,9 @@ export function EventRsvp({
               }}
             >
               {rsvpState === "going" && joinAfters
-                ? "Going + staying for afters 🎉"
+                ? "Going + staying for afters"
                 : rsvpState === "going"
-                ? "Going — just the run 🏃"
+                ? "Going — just the run"
                 : "Maybe"}
             </div>
 
@@ -370,8 +370,8 @@ export function EventRsvp({
             {/* 3-button selector */}
             <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
               {[
-                { label: "Going + afters 🍺", going: true, afters: true },
-                { label: "Just the run 🏃", going: true, afters: false },
+                { label: "Going + afters", going: true, afters: true },
+                { label: "Just the run", going: true, afters: false },
                 { label: "Maybe", going: false, afters: false },
               ].map((opt) => {
                 const isActive = opt.going

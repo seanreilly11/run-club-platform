@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { VENUE_EMOJI } from "@/lib/constants";
 import {
   createRsvp,
   updateRsvpAfters,
@@ -80,8 +79,6 @@ export function NextEventCard({
     community.tier === "pro" && community.themeColor
       ? community.themeColor
       : sunriseGradient;
-
-  const venueEmoji = VENUE_EMOJI[community.postRunDefault] ?? "📍";
 
   function nextAfterPace() {
     if (event.postRunVenueName) {
@@ -329,7 +326,6 @@ export function NextEventCard({
               marginBottom: "14px",
             }}
           >
-            <span>{venueEmoji}</span>
             <span
               style={{
                 fontSize: "12px",
@@ -383,7 +379,7 @@ export function NextEventCard({
                 boxShadow: "0 3px 14px rgba(244,63,94,0.3)",
               }}
             >
-              I&apos;m in! 🏃
+              I&apos;m in!
             </button>
             <div style={{ textAlign: "center", minWidth: "44px" }}>
               <div
@@ -495,7 +491,7 @@ export function NextEventCard({
               <span
                 style={{ fontSize: "12px", color: "#166534", fontWeight: 600 }}
               >
-                You&apos;re in! 🎉
+                You&apos;re in!
               </span>
             </div>
             <div
@@ -514,7 +510,7 @@ export function NextEventCard({
                   marginBottom: "8px",
                 }}
               >
-                {venueEmoji} Staying for afters at {event.postRunVenueName}?
+                Staying for afters at {event.postRunVenueName}?
               </div>
               <div style={{ display: "flex", gap: "6px" }}>
                 <button
@@ -532,7 +528,7 @@ export function NextEventCard({
                     fontFamily: "'Bricolage Grotesque', sans-serif",
                   }}
                 >
-                  Count me in! {venueEmoji}
+                  Count me in!
                 </button>
                 <button
                   onClick={() => handleAfters(false)}
@@ -573,7 +569,7 @@ export function NextEventCard({
               <span
                 style={{ fontSize: "12px", color: "#166534", fontWeight: 600 }}
               >
-                You&apos;re in! 🎉
+                You&apos;re in!
               </span>
               <button
                 onClick={() => setStep("done")}
@@ -617,8 +613,8 @@ export function NextEventCard({
               }}
             >
               {rsvp === "going+social" && event.postRunVenueName
-                ? `See you at ${event.postRunVenueName}! 🎉`
-                : "See you at the start line! 🏃"}
+                ? `See you at ${event.postRunVenueName}!`
+                : "See you at the start line!"}
             </span>
             <div style={{ textAlign: "center", minWidth: "44px" }}>
               <div

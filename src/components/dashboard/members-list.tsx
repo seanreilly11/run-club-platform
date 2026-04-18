@@ -100,7 +100,7 @@ export function MembersList({ members, communitySlug, isFree, freeLimit }: Membe
               flexShrink: 0,
             }}
           >
-            ⬇ CSV 🔒
+            ⬇ CSV (PRO)
           </button>
         ) : (
           <a
@@ -195,7 +195,7 @@ export function MembersList({ members, communitySlug, isFree, freeLimit }: Membe
                     {m.showRate !== null && (
                       <> · {Math.round(parseFloat(m.showRate) * 100)}% show rate</>
                     )}
-                    {m.currentStreak > 0 && <> · 🔥 {m.currentStreak}wk</>}
+                    {m.currentStreak > 0 && <> · {m.currentStreak}wk streak</>}
                     {m.preferredPaceGroup && <> · {m.preferredPaceGroup}</>}
                   </div>
                 </div>

@@ -99,12 +99,12 @@ export function ClubCard({ club, timezone }: ClubCardProps) {
           className="mb-3 flex flex-wrap gap-3"
           style={{ color: "#78716C", fontSize: "11px" }}
         >
-          <span>👥 {club.memberCount} members</span>
+          <span>{club.memberCount} members</span>
           {club.streakRecord > 0 && (
-            <span>🔥 Club streak: {club.streakRecord} wks</span>
+            <span>Club streak: {club.streakRecord} wks</span>
           )}
           {club.nextEvent && (
-            <span>📅 Runs {getRunDayLabel(club.nextEvent.date, timezone)}</span>
+            <span>Runs {getRunDayLabel(club.nextEvent.date, timezone)}</span>
           )}
         </div>
 

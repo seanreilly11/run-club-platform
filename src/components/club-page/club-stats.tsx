@@ -17,9 +17,9 @@ export function ClubStats({ stats }: ClubStatsProps) {
     stats.streakRecord > 0 ? `${stats.streakRecord}wk` : "—";
 
   const statCells = [
-    { icon: "👟", value: avgTurnout, label: "Avg turnout" },
-    { icon: "🍻", value: aftersRate, label: "Stay for afters" },
-    { icon: "🔥", value: streak, label: "Club streak" },
+    { value: avgTurnout, label: "Avg turnout" },
+    { value: aftersRate, label: "Stay for afters" },
+    { value: streak, label: "Club streak" },
   ];
 
   return (
@@ -42,7 +42,6 @@ export function ClubStats({ stats }: ClubStatsProps) {
             boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
           }}
         >
-          <div style={{ fontSize: "16px" }}>{s.icon}</div>
           <div
             style={{
               fontSize: "16px",

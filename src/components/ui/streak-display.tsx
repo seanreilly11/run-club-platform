@@ -15,7 +15,7 @@ export function StreakDisplay({ streak, className }: StreakDisplayProps) {
         className,
       )}
     >
-      🔥 {streak}wk
+      {streak}wk streak
     </span>
   );
 }

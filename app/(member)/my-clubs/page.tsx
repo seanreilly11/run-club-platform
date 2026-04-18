@@ -2,7 +2,6 @@ import Link from "next/link";
 import { getAuthUser } from "@/lib/supabase/server";
 import { getMyClubsMemberships } from "@/lib/db/queries/memberships";
 import { getUpcomingEventsForMember } from "@/lib/db/queries/events";
-import { VENUE_EMOJI } from "@/lib/constants";
 import { MyClubsRsvpButton } from "@/components/my-clubs/rsvp-button";
 
 export const metadata = {
@@ -120,7 +119,6 @@ export default async function MyClubsPage() {
                 borderRadius: "12px",
               }}
             >
-              <div style={{ fontSize: "24px", marginBottom: "6px" }}>🏃</div>
               <div
                 style={{
                   fontSize: "13px",
@@ -140,10 +138,6 @@ export default async function MyClubsPage() {
               style={{ display: "flex", flexDirection: "column", gap: "6px" }}
             >
               {upcomingEvents.map((e) => {
-                const venueEmoji = e.communityPostRunDefault
-                  ? (VENUE_EMOJI[e.communityPostRunDefault] ?? "📍")
-                  : "📍";
-
                 const formattedDate = new Intl.DateTimeFormat("en-GB", {
                   timeZone: e.communityTimezone,
                   weekday: "short",
@@ -250,9 +244,6 @@ export default async function MyClubsPage() {
                               marginTop: "5px",
                             }}
                           >
-                            <span style={{ fontSize: "9px" }}>
-                              {venueEmoji}
-                            </span>
                             <span
                               style={{
                                 fontSize: "9px",
@@ -328,7 +319,6 @@ export default async function MyClubsPage() {
                 borderRadius: "12px",
               }}
             >
-              <div style={{ fontSize: "24px", marginBottom: "6px" }}>🔍</div>
               <div
                 style={{
                   fontSize: "13px",
@@ -378,15 +368,9 @@ export default async function MyClubsPage() {
                       borderRadius: "10px",
                       background:
                         "linear-gradient(to top, #F59E0B 0%, #FB923C 30%, #F97066 60%, #F43F5E 100%)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "16px",
                       flexShrink: 0,
                     }}
-                  >
-                    🔥
-                  </div>
+                  />
 
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div
@@ -438,7 +422,7 @@ export default async function MyClubsPage() {
                       <VibeBadge vibe={m.community.vibe} />
                       {m.currentStreak > 0 && (
                         <span style={{ fontSize: "10px", color: "#F43F5E" }}>
-                          🔥 {m.currentStreak}
+                          {m.currentStreak}wk streak
                         </span>
                       )}
                     </div>
@@ -525,16 +509,10 @@ export default async function MyClubsPage() {
                       height: "40px",
                       borderRadius: "10px",
                       background: "#FFF5F0",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "16px",
                       flexShrink: 0,
                       opacity: 0.6,
                     }}
-                  >
-                    🔥
-                  </div>
+                  />
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <span
                       style={{

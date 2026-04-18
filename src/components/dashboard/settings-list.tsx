@@ -6,7 +6,6 @@ import { ChevronRight, Lock } from "lucide-react";
 import { EditClubModal } from "@/components/dashboard/edit-club-modal";
 
 interface SettingsRow {
-  icon: string;
   label: string;
   description: string;
   href?: string;
@@ -55,7 +54,6 @@ export function SettingsList({ rows, community, isFree }: SettingsListProps) {
 
           const inner = (
             <>
-              <span style={{ fontSize: "18px" }}>{row.icon}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{

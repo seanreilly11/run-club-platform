@@ -24,7 +24,7 @@ export function ActiveMembers({ members }: ActiveMembersProps) {
           Active members
         </h2>
         <p style={{ fontSize: "13px", color: "#78716C" }}>
-          Be the first to join! 👋
+          Be the first to join!
         </p>
       </section>
     );
@@ -100,18 +100,15 @@ export function ActiveMembers({ members }: ActiveMembersProps) {
 
             {/* Streak */}
             {member.currentStreak > 0 && (
-              <>
-                <span style={{ fontSize: "11px", lineHeight: 1 }}>🔥</span>
-                <span
-                  style={{
-                    fontSize: "10px",
-                    fontWeight: 600,
-                    color: "#F43F5E",
-                  }}
-                >
-                  {member.currentStreak}wk
-                </span>
-              </>
+              <span
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  color: "#F43F5E",
+                }}
+              >
+                {member.currentStreak}wk streak
+              </span>
             )}
           </div>
         ))}

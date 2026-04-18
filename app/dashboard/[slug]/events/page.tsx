@@ -54,7 +54,6 @@ export default async function DashboardEventsPage({ params }: Props) {
             borderRadius: "14px",
           }}
         >
-          <div style={{ fontSize: "28px", marginBottom: "10px" }}>📅</div>
           <div
             style={{
               fontFamily: "'Bricolage Grotesque', sans-serif",

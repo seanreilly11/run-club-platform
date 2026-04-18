@@ -10,27 +10,22 @@ export const metadata: Metadata = {
 
 const FEATURES = [
   {
-    icon: "📋",
     title: "Events & RSVPs",
     desc: "Schedule runs, set pace groups, collect RSVPs. Know exactly who's coming.",
   },
   {
-    icon: "🍺",
     title: "Afters coordination",
     desc: "Every event has a venue. Members RSVP for the run AND the afters separately.",
   },
   {
-    icon: "📊",
     title: "Attendance analytics",
     desc: "Track turnout trends, show rates, member health. Know what's working.",
   },
   {
-    icon: "🌐",
     title: "Your club page",
     desc: "A beautiful, SEO-optimized page. New members find you on Google and join in one click.",
   },
   {
-    icon: "🔥",
     title: "Streaks & engagement",
     desc: "Member streaks, milestones, and stats. Keep your community coming back.",
   },
@@ -83,7 +78,7 @@ export default function LandingPage() {
               borderRadius: "20px",
             }}
           >
-            🏃 The platform for run clubs
+            The platform for run clubs
           </div>
           <h1
             className="text-white"
@@ -200,7 +195,6 @@ export default function LandingPage() {
                   "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02)",
               }}
             >
-              <span className="flex-shrink-0 text-[24px]">{f.icon}</span>
               <div>
                 <div className="mb-[2px] text-[14px] font-semibold text-text">
                   {f.title}

@@ -114,16 +114,15 @@ export function Hero({ community, stats }: HeroProps) {
             flexWrap: "wrap",
           }}
         >
-          <span>👥 {community.memberCount} members</span>
+          <span>{community.memberCount} members</span>
           <span style={{ opacity: 0.4 }}>·</span>
           <span>
-            🏃{" "}
             {community.vibe.charAt(0).toUpperCase() + community.vibe.slice(1)}
           </span>
           {stats && stats.streakRecord > 0 && (
             <>
               <span style={{ opacity: 0.4 }}>·</span>
-              <span>🔥 {stats.streakRecord}wk streak</span>
+              <span>{stats.streakRecord}wk streak</span>
             </>
           )}
           {community.instagramHandle && (

@@ -51,7 +51,6 @@ export function StepVibe({ form, onNext, onBack }: StepVibeProps) {
                 : "bg-surface border-border-muted hover:border-border",
             )}
           >
-            <span className="text-2xl">{opt.emoji}</span>
             <div className="flex-1">
               <div className="font-heading font-semibold text-[15px] text-text">
                 {opt.label}

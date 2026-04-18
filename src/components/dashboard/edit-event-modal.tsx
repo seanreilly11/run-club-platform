@@ -201,7 +201,6 @@ export function EditEventModal({
         <div style={{ padding: "20px" }}>
           {cancelled ? (
             <div style={{ textAlign: "center", padding: "32px 0" }}>
-              <div style={{ fontSize: "32px", marginBottom: "8px" }}>🚫</div>
               <div
                 style={{
                   fontFamily: "'Bricolage Grotesque', sans-serif",
@@ -346,7 +345,7 @@ export function EditEventModal({
                     marginBottom: "10px",
                   }}
                 >
-                  🍺 Afters venue
+                  Afters venue
                 </div>
                 <div style={{ marginBottom: "10px" }}>
                   <label style={{ ...labelStyle(), color: "#78350F" }}>Venue name</label>

@@ -31,7 +31,6 @@ export function ClubList({ clubs, totalCount, selectedCity }: ClubListProps) {
           className="rounded-[14px] border bg-surface p-8 text-center"
           style={{ borderColor: "#F5F0EB" }}
         >
-          <div className="mb-1 text-2xl">🏃</div>
           <h2
             className="mb-1 font-bricolage text-[15px] font-semibold"
             style={{ color: "#1C1917" }}

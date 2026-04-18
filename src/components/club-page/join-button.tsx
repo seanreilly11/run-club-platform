@@ -62,7 +62,7 @@ export function JoinButton({
           color: "#B45309",
         }}
       >
-        You&apos;re on the waitlist! 🙋 We&apos;ve let the organizer know.
+        You&apos;re on the waitlist! We&apos;ve let the organizer know.
       </p>
     );
   }
@@ -77,7 +77,7 @@ export function JoinButton({
           color: "#16A34A",
         }}
       >
-        You&apos;re a member! 🎉
+        You&apos;re a member!
       </p>
     );
   }

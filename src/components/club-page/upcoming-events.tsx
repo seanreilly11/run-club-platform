@@ -1,10 +1,8 @@
-import { VENUE_EMOJI } from "@/lib/constants";
 import type { UpcomingEventRow } from "@/lib/db/queries/events";
 
 interface UpcomingEventsProps {
   events: UpcomingEventRow[];
   timezone: string;
-  postRunDefault: "pub" | "coffee" | "brunch" | "none";
 }
 
 function formatEventDate(date: Date, timezone: string): string {
@@ -22,7 +20,6 @@ function formatEventDate(date: Date, timezone: string): string {
 export function UpcomingEvents({
   events,
   timezone,
-  postRunDefault,
 }: UpcomingEventsProps) {
   if (events.length === 0) return null;
 
@@ -42,7 +39,6 @@ export function UpcomingEvents({
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {events.map((event) => {
-          const venueEmoji = VENUE_EMOJI[postRunDefault] ?? "📍";
           return (
             <div
               key={event.id}
@@ -110,7 +106,6 @@ export function UpcomingEvents({
                     borderRadius: "6px",
                   }}
                 >
-                  <span style={{ fontSize: "11px" }}>{venueEmoji}</span>
                   <span
                     style={{
                       fontSize: "10px",

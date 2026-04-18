@@ -121,7 +121,7 @@ export function AuthForm({
 
   const heading = embedded
     ? step === "magic-sent"
-      ? "Check your inbox ✉️"
+      ? "Check your inbox"
       : "Almost there!"
     : step === "email"
       ? "Welcome to RunClub"
@@ -129,7 +129,7 @@ export function AuthForm({
         ? "Welcome back!"
         : step === "new"
           ? "Let's get you set up!"
-          : "Check your inbox ✉️";
+          : "Check your inbox";
 
   const subheading = embedded
     ? step === "magic-sent"
@@ -225,7 +225,7 @@ export function AuthForm({
                 onClick={onMagicLink}
                 disabled={isLoading}
               >
-                Send me a magic link ✉️
+                Send me a magic link
               </Button>
             </form>
           )}

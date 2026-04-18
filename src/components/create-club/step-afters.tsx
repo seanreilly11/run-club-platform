@@ -54,7 +54,6 @@ export function StepAfters({ form, onNext, onBack }: StepAftersProps) {
                     : "bg-surface border-border-muted hover:border-border",
               )}
             >
-              <span className="text-2xl">{opt.emoji}</span>
               <div className="flex-1 font-heading font-semibold text-[15px] text-text">
                 {opt.label}
               </div>

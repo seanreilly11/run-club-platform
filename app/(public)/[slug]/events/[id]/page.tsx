@@ -87,7 +87,7 @@ export default async function EventPage({ params }: Props) {
               fontWeight: 600,
             }}
           >
-            🏃 Running
+            Running
           </span>
           {event.distanceKm && (
             <span
@@ -167,20 +167,6 @@ export default async function EventPage({ params }: Props) {
               marginBottom: "6px",
             }}
           >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                background: "#FFF1F2",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-              }}
-            >
-              📅
-            </div>
             <span
               style={{
                 fontSize: "10px",
@@ -228,20 +214,6 @@ export default async function EventPage({ params }: Props) {
               marginBottom: "6px",
             }}
           >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                background: "#FFF1F2",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-              }}
-            >
-              📍
-            </div>
             <span
               style={{
                 fontSize: "10px",
@@ -298,20 +270,6 @@ export default async function EventPage({ params }: Props) {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "8px",
-                background: "#FFF7ED",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-              }}
-            >
-              🗺️
-            </div>
             <div>
               <div
                 style={{ fontSize: "12px", fontWeight: 500, color: "#1C1917" }}
@@ -365,7 +323,7 @@ export default async function EventPage({ params }: Props) {
                 marginBottom: "6px",
               }}
             >
-              🍺 Afters
+              Afters
             </div>
             <div
               style={{
@@ -401,7 +359,7 @@ export default async function EventPage({ params }: Props) {
               <span
                 style={{ fontSize: "13px", fontWeight: 600, color: "#78350F" }}
               >
-                🍺 {event.aftersCount} staying for afters
+                {event.aftersCount} staying for afters
               </span>
               {event.postRunVenueUrl && (
                 <a
@@ -572,12 +530,12 @@ export default async function EventPage({ params }: Props) {
                   )}
                   {a.currentStreak > 0 && (
                     <span style={{ fontSize: "10px", color: "#F43F5E" }}>
-                      🔥 {a.currentStreak}
+                      {a.currentStreak}wk streak
                     </span>
                   )}
                 </div>
               </div>
-              {a.joiningSocial && <span style={{ fontSize: "12px" }}>🍺</span>}
+              {a.joiningSocial && <span style={{ fontSize: "10px", color: "#B45309", fontWeight: 600 }}>afters</span>}
             </div>
           ))}
         </div>

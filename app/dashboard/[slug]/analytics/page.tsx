@@ -195,7 +195,6 @@ export default async function DashboardAnalyticsPage({ params }: Props) {
               gap: "10px",
             }}
           >
-            <div style={{ fontSize: "28px" }}>🔒</div>
             <div
               style={{
                 fontFamily: "'Bricolage Grotesque', sans-serif",

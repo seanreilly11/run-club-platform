@@ -7,7 +7,6 @@ import { getLastUncapturedEvent } from "@/lib/db/queries/events";
 import { getWaitlistedCount } from "@/lib/db/queries/memberships";
 import { MemberProgress } from "@/components/dashboard/member-progress";
 import { PostEventCapture } from "@/components/dashboard/post-event-capture";
-import { VENUE_EMOJI } from "@/lib/constants";
 import { ShareClubButton } from "@/components/dashboard/share-club-button";
 import { NewEventButton } from "@/components/dashboard/new-event-button";
 
@@ -156,10 +155,10 @@ export default async function DashboardOverviewPage({ params }: Props) {
               color: "#1C1917",
             }}
           >
-            <span>🏃 {totalDistanceKm.toLocaleString()} km together</span>
-            <span>🎉 {statsData.totalEvents} runs</span>
-            <span>👥 {statsData.uniqueRunners} runners</span>
-            <span>🍺 {statsData.totalAftersCount} afters</span>
+            <span>{totalDistanceKm.toLocaleString()} km together</span>
+            <span>{statsData.totalEvents} runs</span>
+            <span>{statsData.uniqueRunners} runners</span>
+            <span>{statsData.totalAftersCount} afters</span>
           </div>
         </div>
       )}
@@ -187,7 +186,6 @@ export default async function DashboardOverviewPage({ params }: Props) {
               borderRadius: "12px",
             }}
           >
-            <div style={{ fontSize: "24px", marginBottom: "8px" }}>📅</div>
             <div
               style={{
                 fontSize: "13px",
@@ -216,9 +214,6 @@ export default async function DashboardOverviewPage({ params }: Props) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {upcomingEventsData.map((event, i) => {
-              const venueEmoji = event.postRunVenueName
-                ? (VENUE_EMOJI[communityData.postRunDefault] ?? "📍")
-                : null;
               const formattedDate = new Intl.DateTimeFormat("en-GB", {
                 timeZone: communityData.timezone,
                 weekday: "short",
@@ -294,12 +289,11 @@ export default async function DashboardOverviewPage({ params }: Props) {
                         <span style={{ fontSize: "11px", color: "#A8A29E" }}>
                           {event.goingCount} going
                         </span>
-                        {venueEmoji && event.postRunVenueName && (
+                        {event.postRunVenueName && (
                           <span
                             style={{
                               display: "inline-flex",
                               alignItems: "center",
-                              gap: "3px",
                               fontSize: "10px",
                               padding: "1px 6px",
                               background: "#FEF3C7",
@@ -308,7 +302,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
                               fontWeight: 500,
                             }}
                           >
-                            {venueEmoji} {event.postRunVenueName}
+                            Afters at {event.postRunVenueName}
                           </span>
                         )}
                       </div>
