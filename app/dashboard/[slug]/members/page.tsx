@@ -160,7 +160,7 @@ export default async function DashboardMembersPage({ params }: Props) {
                     </div>
                     <div style={{ fontSize: "10px", color: "#A8A29E" }}>
                       {m.eventsAttended} runs
-                      {m.showRate && (
+                      {m.showRate !== null && (
                         <>
                           {" "}
                           · {Math.round(parseFloat(m.showRate) * 100)}% show

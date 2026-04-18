@@ -5,7 +5,7 @@ import {
   memberAttendanceStats,
   users,
 } from "@/lib/db/schema";
-import { eq, and, inArray, count, sql } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 
 export type MemberRole = "owner" | "admin" | "member" | "waitlisted";
 

@@ -13,7 +13,7 @@ export function PostEventCapture({
   communitySlug,
 }: PostEventCaptureProps) {
   const [actual, setActual] = useState("");
-  const [social, setSocial] = useState("");
+  const [social, setSocial] = useState("0");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -159,10 +159,10 @@ export function PostEventCapture({
         </div>
         <button
           onClick={handleSave}
-          disabled={saving || !actual}
+          disabled={saving || !actual || social === ""}
           style={{
             padding: "8px 16px",
-            background: saving || !actual ? "#D4D4D8" : "#B45309",
+            background: saving || !actual || social === "" ? "#D4D4D8" : "#B45309",
             color: "white",
             border: "none",
             borderRadius: "8px",

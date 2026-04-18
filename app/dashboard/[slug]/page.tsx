@@ -207,7 +207,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
               Schedule your first run to get started
             </div>
             <Link
-              href={`/dashboard/${slug}/events`}
+              href={`/dashboard/${slug}/events/new`}
               style={{
                 display: "inline-block",
                 padding: "8px 16px",
@@ -324,7 +324,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
                       </div>
                     </div>
                     <Link
-                      href={`/dashboard/${slug}/events`}
+                      href={`/dashboard/${slug}/events/${event.id}/edit`}
                       style={{
                         flexShrink: 0,
                         marginLeft: "12px",
