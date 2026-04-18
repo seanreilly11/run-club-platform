@@ -1,7 +1,7 @@
-import { ChevronRight, Lock } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getClubBySlug } from "@/lib/db/queries/communities";
+import { SettingsList } from "@/components/dashboard/settings-list";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -11,9 +11,9 @@ interface SettingsRow {
   icon: string;
   label: string;
   description: string;
-  href: string;
+  href?: string;
   proOnly?: boolean;
-  destructive?: boolean;
+  isClubDetails?: boolean;
 }
 
 export default async function DashboardSettingsPage({ params }: Props) {
@@ -28,7 +28,13 @@ export default async function DashboardSettingsPage({ params }: Props) {
       icon: "📝",
       label: "Club details",
       description: "Name, description, city, vibe, afters venue",
-      href: `/dashboard/${slug}/settings/details`,
+      isClubDetails: true,
+    },
+    {
+      icon: "👥",
+      label: "Team",
+      description: "Manage admins and invitations",
+      href: `/dashboard/${slug}/settings/team`,
     },
     {
       icon: "💳",
@@ -53,6 +59,16 @@ export default async function DashboardSettingsPage({ params }: Props) {
     },
   ];
 
+  const communityData = {
+    slug: community.slug,
+    name: community.name,
+    city: community.city,
+    description: community.description,
+    vibe: community.vibe,
+    postRunDefault: community.postRunDefault,
+    instagramHandle: community.instagramHandle,
+  };
+
   return (
     <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
       <h2
@@ -67,73 +83,8 @@ export default async function DashboardSettingsPage({ params }: Props) {
         Settings
       </h2>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-          marginBottom: "24px",
-        }}
-      >
-        {rows.map((row) => {
-          const isLocked = row.proOnly && isFree;
-
-          return (
-            <Link
-              key={row.label}
-              href={isLocked ? `/dashboard/${slug}/settings/billing` : row.href}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "14px",
-                background: "#FFFFFF",
-                border: "1px solid #F5F0EB",
-                borderRadius: "12px",
-                textDecoration: "none",
-                opacity: isLocked ? 0.7 : 1,
-              }}
-            >
-              <span style={{ fontSize: "18px" }}>{row.icon}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#1C1917",
-                    marginBottom: "1px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  {row.label}
-                  {isLocked && (
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "2px",
-                        fontSize: "9px",
-                        fontWeight: 600,
-                        padding: "1px 5px",
-                        background: "#FFE4E6",
-                        color: "#F43F5E",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      <Lock size={8} /> PRO
-                    </span>
-                  )}
-                </div>
-                <div style={{ fontSize: "11px", color: "#A8A29E" }}>
-                  {row.description}
-                </div>
-              </div>
-              <ChevronRight size={14} color="#A8A29E" />
-            </Link>
-          );
-        })}
+      <div style={{ marginBottom: "24px" }}>
+        <SettingsList rows={rows} community={communityData} isFree={isFree} />
       </div>
 
       {/* Danger zone */}
