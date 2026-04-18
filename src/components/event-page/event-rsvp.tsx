@@ -5,6 +5,7 @@ import {
   createRsvp,
   updateRsvpAfters,
   updateRsvpStatus,
+  updateRsvpPaceGroup,
   withdrawRsvp,
 } from "@/lib/actions/rsvp";
 
@@ -146,6 +147,22 @@ export function EventRsvp({
     }
   }
 
+  async function handlePaceGroupChange(groupName: string) {
+    const prev = selectedPace;
+    setSelectedPace(groupName);
+    if (rsvpState !== "none") {
+      const result = await updateRsvpPaceGroup({
+        eventId: event.id,
+        paceGroup: groupName,
+        communitySlug: community.slug,
+      });
+      if (!result.success) {
+        setSelectedPace(prev);
+        setError(result.error);
+      }
+    }
+  }
+
   return (
     <>
       {/* Pace group selector — standalone section */}
@@ -160,16 +177,12 @@ export function EventRsvp({
               color: "#1C1917",
             }}
           >
-            Choose your pace group
+            {rsvpState !== "none" ? "Your pace group" : "Choose your pace group"}
           </h3>
-          <p
-            style={{
-              fontSize: "11px",
-              color: "#A8A29E",
-              margin: "0 0 8px 0",
-            }}
-          >
-            Pick a group so the organizer knows where you&apos;ll be
+          <p style={{ fontSize: "11px", color: "#A8A29E", margin: "0 0 8px 0" }}>
+            {rsvpState !== "none"
+              ? "Tap to switch — the organizer will see your updated group."
+              : "Pick a group so the organizer knows where you'll be"}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {event.paceGroups.map((g) => {
@@ -177,7 +190,7 @@ export function EventRsvp({
               return (
                 <button
                   key={g.name}
-                  onClick={() => setSelectedPace(selected ? null : g.name)}
+                  onClick={() => handlePaceGroupChange(g.name)}
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
@@ -312,121 +325,139 @@ export function EventRsvp({
           </>
         ) : (
           <div>
-            {/* Confirmation badge */}
+            {/* Your RSVP summary */}
             <div
               style={{
-                background: "#F0FDF4",
-                border: "1px solid #BBF7D0",
-                borderRadius: "10px",
-                padding: "12px",
-                marginBottom: "12px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
+                fontSize: "11px",
+                fontWeight: 600,
+                color: "#A8A29E",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "4px",
               }}
             >
-              <div
-                style={{
-                  width: "24px",
-                  height: "24px",
-                  borderRadius: "50%",
-                  background: "#16A34A",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <div>
-                <div style={{ fontSize: "13px", fontWeight: 600, color: "#166534" }}>
-                  {rsvpState === "going" ? "You're in! 🎉" : "Maybe — we'll save you a spot"}
-                </div>
-                {selectedPace && (
-                  <div style={{ fontSize: "11px", color: "#15803D" }}>Pace: {selectedPace}</div>
-                )}
-              </div>
+              Your RSVP
+            </div>
+            <div
+              style={{
+                fontSize: "14px",
+                fontWeight: 600,
+                color: "#166534",
+                marginBottom: "14px",
+              }}
+            >
+              {rsvpState === "going" && joinAfters
+                ? "Going + staying for afters 🎉"
+                : rsvpState === "going"
+                ? "Going — just the run 🏃"
+                : "Maybe"}
             </div>
 
-            {/* Afters toggle */}
-            {event.postRunVenueName && (
-              <div
-                onClick={handleAftersToggle}
-                style={{
-                  background: joinAfters ? "#FEF3C7" : "#FFF5F0",
-                  border: `1px solid ${joinAfters ? "#FDE68A" : "#F5F0EB"}`,
-                  borderRadius: "10px",
-                  padding: "12px",
-                  marginBottom: "12px",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "16px" }}>🍺</span>
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        color: joinAfters ? "#78350F" : "#1C1917",
-                      }}
-                    >
-                      Staying for afters?
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "10px",
-                        color: joinAfters ? "#92400E" : "#A8A29E",
-                      }}
-                    >
-                      {event.postRunVenueName} · {event.aftersCount} others are
-                    </div>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    width: "40px",
-                    height: "22px",
-                    borderRadius: "11px",
-                    background: joinAfters ? "#16A34A" : "#D1D5DB",
-                    padding: "2px",
-                    flexShrink: 0,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "18px",
-                      height: "18px",
-                      borderRadius: "50%",
-                      background: "white",
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-                      transform: joinAfters ? "translateX(18px)" : "translateX(0)",
-                      transition: "transform 0.2s",
-                    }}
-                  />
-                </div>
-              </div>
-            )}
+            {/* Change your response label */}
+            <div
+              style={{
+                fontSize: "11px",
+                fontWeight: 600,
+                color: "#A8A29E",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                marginBottom: "8px",
+              }}
+            >
+              Change your response
+            </div>
 
-            {/* Change / Undo */}
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px" }}>
-              <span
-                onClick={handleChangeStatus}
-                style={{ color: "#F43F5E", cursor: "pointer", fontWeight: 500 }}
-              >
-                Change to {rsvpState === "going" ? "Maybe" : "Going"}
-              </span>
+            {/* 3-button selector */}
+            <div style={{ display: "flex", gap: "6px", marginBottom: "14px" }}>
+              {[
+                { label: "Going + afters 🍺", going: true, afters: true },
+                { label: "Just the run 🏃", going: true, afters: false },
+                { label: "Maybe", going: false, afters: false },
+              ].map((opt) => {
+                const isActive = opt.going
+                  ? rsvpState === "going" && joinAfters === opt.afters
+                  : rsvpState === "maybe";
+                return (
+                  <button
+                    key={opt.label}
+                    onClick={async () => {
+                      const newStatus = opt.going ? "going" : "maybe";
+                      if (newStatus !== rsvpState) {
+                        const prev = rsvpState;
+                        setRsvpState(newStatus);
+                        if (newStatus === "going") {
+                          setGoingCount((c) => c + 1);
+                          setMaybeCount((c) => c - 1);
+                        } else {
+                          setMaybeCount((c) => c + 1);
+                          setGoingCount((c) => c - 1);
+                        }
+                        const result = await updateRsvpStatus({
+                          eventId: event.id,
+                          status: newStatus,
+                          communitySlug: community.slug,
+                        });
+                        if (!result.success) {
+                          setRsvpState(prev);
+                          if (newStatus === "going") {
+                            setGoingCount((c) => c - 1);
+                            setMaybeCount((c) => c + 1);
+                          } else {
+                            setMaybeCount((c) => c - 1);
+                            setGoingCount((c) => c + 1);
+                          }
+                          setError(result.error);
+                          return;
+                        }
+                      }
+                      if (opt.going && opt.afters !== joinAfters) {
+                        setJoinAfters(opt.afters);
+                        void updateRsvpAfters({
+                          eventId: event.id,
+                          joiningSocial: opt.afters,
+                          communitySlug: community.slug,
+                        });
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: "8px 4px",
+                      borderRadius: "10px",
+                      border: isActive
+                        ? `2px solid ${opt.going ? "#F43F5E" : "#F59E0B"}`
+                        : "1.5px solid #F5F0EB",
+                      background: isActive
+                        ? opt.going ? "#FFF5F0" : "#FFFBEB"
+                        : "#FFFFFF",
+                      fontSize: "11px",
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive
+                        ? opt.going ? "#F43F5E" : "#B45309"
+                        : "#78716C",
+                      cursor: "pointer",
+                      fontFamily: "'DM Sans', sans-serif",
+                      textAlign: "center" as const,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Withdraw */}
+            <div style={{ textAlign: "center" }}>
               <span
                 onClick={handleUndo}
-                style={{ color: "#A8A29E", cursor: "pointer" }}
+                style={{
+                  fontSize: "11px",
+                  color: "#A8A29E",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
               >
-                Undo
+                Withdraw RSVP
               </span>
             </div>
           </div>
