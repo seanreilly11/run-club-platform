@@ -5,7 +5,7 @@ import {
   memberAttendanceStats,
   users,
 } from "@/lib/db/schema";
-import { eq, and, inArray, sql } from "drizzle-orm";
+import { eq, and, inArray, sql, asc } from "drizzle-orm";
 
 export type MemberRole = "owner" | "admin" | "member" | "waitlisted";
 
@@ -22,6 +22,7 @@ export type UserMembership = {
 export type DashboardMemberRow = {
   userId: string;
   name: string;
+  email: string;
   role: "owner" | "admin" | "member" | "waitlisted";
   joinedAt: Date;
   eventsAttended: number;
@@ -120,6 +121,7 @@ export async function getDashboardMembers(
     .select({
       userId: memberships.userId,
       name: users.name,
+      email: users.email,
       role: memberships.role,
       joinedAt: memberships.joinedAt,
       eventsAttended: memberAttendanceStats.eventsAttended,
@@ -143,6 +145,7 @@ export async function getDashboardMembers(
   return rows.map((r) => ({
     userId: r.userId,
     name: r.name,
+    email: r.email,
     role: r.role,
     joinedAt: r.joinedAt,
     eventsAttended: r.eventsAttended ?? 0,
@@ -151,6 +154,33 @@ export async function getDashboardMembers(
     status: r.status ?? null,
     preferredPaceGroup: r.preferredPaceGroup ?? null,
   }));
+}
+
+export type TeamMember = {
+  userId: string;
+  name: string;
+  email: string;
+  role: "owner" | "admin";
+};
+
+export async function getTeamMembers(communityId: string): Promise<TeamMember[]> {
+  const rows = await db
+    .select({
+      userId: memberships.userId,
+      name: users.name,
+      email: users.email,
+      role: memberships.role,
+    })
+    .from(memberships)
+    .innerJoin(users, eq(users.id, memberships.userId))
+    .where(
+      and(
+        eq(memberships.communityId, communityId),
+        inArray(memberships.role, ["owner", "admin"]),
+      ),
+    )
+    .orderBy(asc(memberships.joinedAt));
+  return rows as TeamMember[];
 }
 
 export async function getWaitlistedCount(communityId: string): Promise<number> {

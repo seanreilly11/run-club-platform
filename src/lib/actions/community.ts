@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { communities, memberships } from "@/lib/db/schema";
 import { getAuthUser } from "@/lib/supabase/server";
 import {
   slugSchema,
   createCommunitySchema,
+  updateCommunitySchema,
 } from "@/lib/validations/community";
 import type { ActionResult } from "@/types/actions";
 
@@ -137,5 +138,47 @@ export async function updateCoverPhoto(
 
   revalidatePath("/my-clubs");
   revalidatePath(`/${community[0].slug}`);
+  return { success: true, data: undefined };
+}
+
+// ─── updateCommunity ──────────────────────────────────────────────────────────
+
+export async function updateCommunity(
+  input: unknown,
+): Promise<ActionResult<void>> {
+  const user = await getAuthUser();
+  if (!user) return { success: false, error: "Not authenticated" };
+
+  const parsed = updateCommunitySchema.safeParse(input);
+  if (!parsed.success) return { success: false, error: parsed.error.issues[0].message };
+  const { communitySlug, ...fields } = parsed.data;
+
+  const communityRows = await db
+    .select({ id: communities.id })
+    .from(communities)
+    .where(eq(communities.slug, communitySlug))
+    .limit(1);
+  if (!communityRows.length) return { success: false, error: "Club not found" };
+  const communityId = communityRows[0].id;
+
+  const membershipRows = await db
+    .select({ role: memberships.role })
+    .from(memberships)
+    .where(and(eq(memberships.userId, user.id), eq(memberships.communityId, communityId)))
+    .limit(1);
+  if (!membershipRows[0] || membershipRows[0].role !== "owner")
+    return { success: false, error: "Only the owner can edit club details" };
+
+  await db.update(communities).set({
+    name: fields.name,
+    city: fields.city,
+    description: fields.description || null,
+    vibe: fields.vibe,
+    postRunDefault: fields.postRunDefault,
+    instagramHandle: fields.instagramHandle || null,
+  }).where(eq(communities.id, communityId));
+
+  revalidatePath(`/dashboard/${communitySlug}/settings`);
+  revalidatePath(`/${communitySlug}`);
   return { success: true, data: undefined };
 }

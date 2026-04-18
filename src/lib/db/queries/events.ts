@@ -31,7 +31,13 @@ export type DashboardEventRow = {
   actualSocialAttendance: number | null;
   distanceKm: string | null;
   distanceUnit: "km" | "mi";
+  meetingPointName: string;
+  routeUrl: string | null;
   postRunVenueName: string | null;
+  postRunVenueUrl: string | null;
+  postRunVenueNotes: string | null;
+  paceGroups: Array<{ name: string; pace: string }> | null;
+  description: string | null;
 };
 
 export type UncapturedEventRow = {
@@ -221,7 +227,13 @@ export async function getDashboardEvents(
       actualSocialAttendance: events.actualSocialAttendance,
       distanceKm: events.distanceKm,
       distanceUnit: events.distanceUnit,
+      meetingPointName: events.meetingPointName,
+      routeUrl: events.routeUrl,
       postRunVenueName: events.postRunVenueName,
+      postRunVenueUrl: events.postRunVenueUrl,
+      postRunVenueNotes: events.postRunVenueNotes,
+      paceGroups: events.paceGroups,
+      description: events.description,
     })
     .from(events)
     .where(eq(events.communityId, communityId))

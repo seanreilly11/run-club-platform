@@ -36,3 +36,21 @@ export const createCommunitySchema = z.object({
 });
 
 export type CreateCommunityData = z.infer<typeof createCommunitySchema>;
+
+export const updateCommunitySchema = z.object({
+  communitySlug: z.string(),
+  name: z.string().min(1, "Name is required").max(100),
+  city: z.string().min(1, "City is required"),
+  description: z.string().max(2000).optional().or(z.literal("")),
+  vibe: z.enum(["competitive", "social", "casual"]),
+  postRunDefault: z.enum(["pub", "coffee", "brunch", "none"]),
+  instagramHandle: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9._]*$/,
+      "Letters, numbers, periods and underscores only",
+    )
+    .max(30, "Maximum 30 characters")
+    .optional()
+    .or(z.literal("")),
+});
