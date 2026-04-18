@@ -14,9 +14,11 @@ export default async function CreatePage({ searchParams }: CreatePageProps) {
   const [params, user] = await Promise.all([searchParams, getAuthUser()]);
 
   return (
-    <CreateClubWizard
-      initialUser={user ? { id: user.id } : null}
-      authComplete={params.auth_complete === "1"}
-    />
+    <div style={{ maxWidth: "720px", margin: "0 auto", padding: "0 16px" }}>
+      <CreateClubWizard
+        initialUser={user ? { id: user.id } : null}
+        authComplete={params.auth_complete === "1"}
+      />
+    </div>
   );
 }

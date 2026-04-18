@@ -48,6 +48,8 @@ export default async function EventPage({ params }: Props) {
         minHeight: "100%",
         color: "#1C1917",
         padding: "10px 16px 24px",
+        maxWidth: "720px",
+        margin: "0 auto",
       }}
     >
       {/* Breadcrumb */}
@@ -193,7 +195,9 @@ export default async function EventPage({ params }: Props) {
           <div style={{ fontSize: "13px", fontWeight: 600, color: "#1C1917" }}>
             {formattedDate}
           </div>
-          <div style={{ fontSize: "12px", color: "#78716C" }}>{formattedTime}</div>
+          <div style={{ fontSize: "12px", color: "#78716C" }}>
+            {formattedTime}
+          </div>
           <div
             style={{
               fontSize: "11px",
@@ -252,7 +256,9 @@ export default async function EventPage({ params }: Props) {
           <div style={{ fontSize: "13px", fontWeight: 600, color: "#1C1917" }}>
             {event.meetingPointName}
           </div>
-          <div style={{ fontSize: "12px", color: "#78716C" }}>{community.city}</div>
+          <div style={{ fontSize: "12px", color: "#78716C" }}>
+            {community.city}
+          </div>
           {event.meetingPointLat && event.meetingPointLng && (
             <a
               href={`https://maps.google.com/?q=${event.meetingPointLat},${event.meetingPointLng}`}
@@ -307,7 +313,9 @@ export default async function EventPage({ params }: Props) {
               🗺️
             </div>
             <div>
-              <div style={{ fontSize: "12px", fontWeight: 500, color: "#1C1917" }}>
+              <div
+                style={{ fontSize: "12px", fontWeight: 500, color: "#1C1917" }}
+              >
                 View route
               </div>
               <div style={{ fontSize: "10px", color: "#A8A29E" }}>
@@ -315,7 +323,9 @@ export default async function EventPage({ params }: Props) {
               </div>
             </div>
           </div>
-          <span style={{ fontSize: "11px", color: "#F43F5E", fontWeight: 500 }}>→</span>
+          <span style={{ fontSize: "11px", color: "#F43F5E", fontWeight: 500 }}>
+            →
+          </span>
         </a>
       )}
 
@@ -388,7 +398,9 @@ export default async function EventPage({ params }: Props) {
                 marginBottom: "6px",
               }}
             >
-              <span style={{ fontSize: "13px", fontWeight: 600, color: "#78350F" }}>
+              <span
+                style={{ fontSize: "13px", fontWeight: 600, color: "#78350F" }}
+              >
                 🍺 {event.aftersCount} staying for afters
               </span>
               {event.postRunVenueUrl && (
@@ -487,7 +499,8 @@ export default async function EventPage({ params }: Props) {
             Who&apos;s coming
           </h3>
           <span style={{ fontSize: "11px", color: "#A8A29E" }}>
-            {event.goingCount} going · {event.aftersCount} afters · {event.maybeCount} maybe
+            {event.goingCount} going · {event.aftersCount} afters ·{" "}
+            {event.maybeCount} maybe
           </span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -527,7 +540,13 @@ export default async function EventPage({ params }: Props) {
                   .slice(0, 2)}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: "12px", fontWeight: 500, color: "#1C1917" }}>
+                <div
+                  style={{
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#1C1917",
+                  }}
+                >
                   {a.name}
                 </div>
                 <div

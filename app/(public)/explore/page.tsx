@@ -73,7 +73,11 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
             <MapWrapper clubs={clubs} selectedCity={selectedCity} />
           </Suspense>
         ) : (
-          <ClubList clubs={clubs} totalCount={clubs.length} selectedCity={selectedCity} />
+          <ClubList
+            clubs={clubs}
+            totalCount={clubs.length}
+            selectedCity={selectedCity}
+          />
         )}
       </div>
     </div>

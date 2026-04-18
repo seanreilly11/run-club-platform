@@ -25,7 +25,7 @@ export default async function DashboardEventsPage({ params }: Props) {
   const allEvents = await getDashboardEvents(community.id);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "640px" }}>
+    <div style={{ padding: "20px", maxWidth: "640px", margin: "0 auto" }}>
       {/* Header */}
       <div
         style={{

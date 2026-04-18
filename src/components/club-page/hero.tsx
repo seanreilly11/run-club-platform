@@ -55,7 +55,7 @@ export function Hero({ community, stats }: HeroProps) {
         }}
       />
 
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", maxWidth: "720px", margin: "0 auto" }}>
         {/* Location pill */}
         <div
           style={{
@@ -116,7 +116,10 @@ export function Hero({ community, stats }: HeroProps) {
         >
           <span>👥 {community.memberCount} members</span>
           <span style={{ opacity: 0.4 }}>·</span>
-          <span>🏃 {community.vibe.charAt(0).toUpperCase() + community.vibe.slice(1)}</span>
+          <span>
+            🏃{" "}
+            {community.vibe.charAt(0).toUpperCase() + community.vibe.slice(1)}
+          </span>
           {stats && stats.streakRecord > 0 && (
             <>
               <span style={{ opacity: 0.4 }}>·</span>
@@ -130,10 +133,14 @@ export function Hero({ community, stats }: HeroProps) {
                 href={`https://instagram.com/${community.instagramHandle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{ color: "rgba(255,255,255,0.9)", display: "flex", alignItems: "center", gap: "4px" }}
+                style={{
+                  color: "rgba(255,255,255,0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
               >
-                <InstagramIcon size={12} />
-                @{community.instagramHandle}
+                <InstagramIcon size={12} />@{community.instagramHandle}
               </a>
             </>
           )}

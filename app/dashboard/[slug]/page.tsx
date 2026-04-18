@@ -77,6 +77,7 @@ export default async function DashboardOverviewPage({ params }: Props) {
         flexDirection: "column",
         gap: "16px",
         maxWidth: "640px",
+        margin: "0 auto",
       }}
     >
       {/* Member progress bar (free tier only) */}

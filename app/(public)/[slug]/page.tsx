@@ -32,8 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       `${community.name} is a run club in ${community.city}. Join us for runs and afters.`,
     openGraph: {
       title: community.name,
-      description:
-        community.description ?? `Run club in ${community.city}`,
+      description: community.description ?? `Run club in ${community.city}`,
       type: "website",
     },
   };
@@ -57,16 +56,12 @@ export default async function ClubPage({ params }: Props) {
       getNextEvent(community.id),
       getUpcomingEvents(community.id),
       getActiveMembers(community.id),
-      user
-        ? getUserMembership(user.id, community.slug)
-        : Promise.resolve(null),
+      user ? getUserMembership(user.id, community.slug) : Promise.resolve(null),
     ]);
 
   // User's RSVP for next event (sequential — depends on nextEvent)
   const userRsvp =
-    user && nextEvent
-      ? await getUserRsvpForEvent(nextEvent.id, user.id)
-      : null;
+    user && nextEvent ? await getUserRsvpForEvent(nextEvent.id, user.id) : null;
 
   const isMember = !!membership && membership.role !== "waitlisted";
 
@@ -74,7 +69,16 @@ export default async function ClubPage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <Hero community={community} stats={stats} />
 
-      <div style={{ padding: "16px 20px 28px", display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div
+        style={{
+          padding: "16px 20px 28px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          maxWidth: "720px",
+          margin: "0 auto",
+        }}
+      >
         {nextEvent ? (
           <NextEventCard
             event={nextEvent}
