@@ -126,6 +126,13 @@ export function NavbarActions({ user }: NavbarActionsProps) {
                 >
                   My Clubs
                 </Link>
+                <Link
+                  href="/profile"
+                  className="py-3 text-lg font-medium text-text border-b border-border-muted"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Profile
+                </Link>
                 <form action={signOut} className="mt-4">
                   <button
                     type="submit"
