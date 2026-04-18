@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { eq, and, gte, sql, desc, isNull } from "drizzle-orm";
-import { events, eventRsvps, users, communities, memberships } from "@/lib/db/schema";
+import { events, eventRsvps, users, communities, memberships, memberAttendanceStats } from "@/lib/db/schema";
 import type { EventRsvp } from "@/lib/db/schema";
 
 export type UpcomingEventRow = {
@@ -114,6 +114,7 @@ export type EventDetailRow = {
   isRecurring: boolean;
   status: "upcoming" | "completed" | "cancelled";
   goingCount: number;
+  maybeCount: number;
   aftersCount: number;
 };
 
@@ -122,12 +123,14 @@ export type EventAttendeeRow = {
   name: string;
   paceGroup: string | null;
   joiningSocial: boolean;
+  currentStreak: number;
 };
 
 export async function getEventById(
   eventId: string,
 ): Promise<EventDetailRow | null> {
   const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+  const maybeCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'maybe')::int`;
   const aftersCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.joiningSocial} = true AND ${eventRsvps.status} = 'going')::int`;
 
   const rows = await db
@@ -150,6 +153,7 @@ export async function getEventById(
       isRecurring: events.isRecurring,
       status: events.status,
       goingCount,
+      maybeCount,
       aftersCount,
     })
     .from(events)
@@ -169,9 +173,18 @@ export async function getEventAttendees(
       name: users.name,
       paceGroup: eventRsvps.paceGroup,
       joiningSocial: eventRsvps.joiningSocial,
+      currentStreak: sql<number>`COALESCE(${memberAttendanceStats.currentStreak}, 0)`,
     })
     .from(eventRsvps)
     .innerJoin(users, eq(eventRsvps.userId, users.id))
+    .innerJoin(events, eq(events.id, eventRsvps.eventId))
+    .leftJoin(
+      memberAttendanceStats,
+      and(
+        eq(memberAttendanceStats.userId, eventRsvps.userId),
+        eq(memberAttendanceStats.communityId, events.communityId),
+      ),
+    )
     .where(eq(eventRsvps.eventId, eventId))
     .orderBy(eventRsvps.createdAt)
     .limit(limit);

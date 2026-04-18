@@ -197,6 +197,30 @@ export async function updateRsvpPaceGroup(input: {
   return { success: true, data: undefined };
 }
 
+// ─── updateRsvpStatus ────────────────────────────────────────────────────────
+
+export async function updateRsvpStatus(input: {
+  eventId: string;
+  status: "going" | "maybe";
+  communitySlug: string;
+}): Promise<ActionResult<void>> {
+  const user = await getAuthUser();
+  if (!user) return { success: false, error: "Not authenticated" };
+
+  await db
+    .update(eventRsvps)
+    .set({ status: input.status })
+    .where(
+      and(
+        eq(eventRsvps.eventId, input.eventId),
+        eq(eventRsvps.userId, user.id),
+      ),
+    );
+
+  revalidatePath(`/${input.communitySlug}`);
+  return { success: true, data: undefined };
+}
+
 // ─── withdrawRsvp ─────────────────────────────────────────────────────────────
 
 export async function withdrawRsvp(input: {
