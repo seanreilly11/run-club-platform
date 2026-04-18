@@ -1,4 +1,4 @@
-import { CreateClubWizard } from "@/components/create-club-wizard";
+import { CreateClubWizard } from "@/components/create-club/create-club-wizard";
 import { getAuthUser } from "@/lib/supabase/server";
 
 export const metadata = {

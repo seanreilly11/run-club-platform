@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { POST_RUN_OPTIONS } from "@/lib/constants";
-import type { WizardData } from "@/components/create-club-wizard";
+import type { WizardData } from "@/components/create-club/create-club-wizard";
 
 interface StepAftersProps {
   form: UseFormReturn<WizardData>;
@@ -72,7 +72,12 @@ export function StepAfters({ form, onNext, onBack }: StepAftersProps) {
       </div>
 
       <div className="flex gap-2">
-        <Button type="button" variant="outline" onClick={onBack} className="w-1/3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="w-1/3"
+        >
           ← Back
         </Button>
         <Button

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, generateSlug } from "@/lib/utils";
 import { checkSlugAvailability } from "@/lib/actions/community";
-import type { WizardData } from "@/components/create-club-wizard";
+import type { WizardData } from "@/components/create-club/create-club-wizard";
 
 interface StepNameProps {
   form: UseFormReturn<WizardData>;
@@ -16,7 +16,9 @@ interface StepNameProps {
 
 export function StepName({ form, onNext }: StepNameProps) {
   const [slugEditable, setSlugEditable] = useState(false);
-  const [slugStatus, setSlugStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
+  const [slugStatus, setSlugStatus] = useState<
+    "idle" | "checking" | "available" | "taken"
+  >("idle");
 
   const name = form.watch("name");
   const slug = form.watch("slug");
@@ -78,9 +80,7 @@ export function StepName({ form, onNext }: StepNameProps) {
         {/* Slug preview */}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[13px] text-text-light">
-              runclub.app/
-            </span>
+            <span className="text-[13px] text-text-light">runclub.app/</span>
             {slugEditable ? (
               <Input
                 {...form.register("slug")}

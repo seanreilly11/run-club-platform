@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { VIBE_OPTIONS } from "@/lib/constants";
-import type { WizardData } from "@/components/create-club-wizard";
+import type { WizardData } from "@/components/create-club/create-club-wizard";
 
 const VIBE_DESCRIPTIONS: Record<string, string> = {
   competitive: "PBs, intervals, race training",
@@ -43,7 +43,9 @@ export function StepVibe({ form, onNext, onBack }: StepVibeProps) {
           <button
             key={opt.value}
             type="button"
-            onClick={() => form.setValue("vibe", opt.value, { shouldValidate: true })}
+            onClick={() =>
+              form.setValue("vibe", opt.value, { shouldValidate: true })
+            }
             className={cn(
               "w-full flex items-center gap-3 p-4 rounded-[var(--radius-card)] border text-left transition-colors",
               selected === opt.value
@@ -73,7 +75,12 @@ export function StepVibe({ form, onNext, onBack }: StepVibeProps) {
       )}
 
       <div className="flex gap-2">
-        <Button type="button" variant="outline" onClick={onBack} className="w-1/3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="w-1/3"
+        >
           ← Back
         </Button>
         <Button

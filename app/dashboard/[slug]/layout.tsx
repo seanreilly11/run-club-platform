@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getAuthUser } from "@/lib/supabase/server";
 import { getUserMembership } from "@/lib/db/queries/memberships";
-import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { DashboardMobileTabs } from "@/components/dashboard-mobile-tabs";
+import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
+import { DashboardMobileTabs } from "@/components/dashboard/dashboard-mobile-tabs";
 
 interface DashboardSlugLayoutProps {
   children: React.ReactNode;

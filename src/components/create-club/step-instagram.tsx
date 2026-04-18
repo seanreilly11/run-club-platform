@@ -3,7 +3,7 @@
 import type { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { WizardData } from "@/components/create-club-wizard";
+import type { WizardData } from "@/components/create-club/create-club-wizard";
 
 interface StepInstagramProps {
   form: UseFormReturn<WizardData>;
@@ -50,7 +50,12 @@ export function StepInstagram({ form, onNext, onBack }: StepInstagramProps) {
       </div>
 
       <div className="flex gap-2">
-        <Button type="button" variant="outline" onClick={onBack} className="w-1/3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          className="w-1/3"
+        >
           ← Back
         </Button>
         <Button
