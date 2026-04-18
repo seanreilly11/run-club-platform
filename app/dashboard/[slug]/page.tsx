@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getClubBySlug } from "@/lib/db/queries/communities";
 import { getCommunityStats } from "@/lib/db/queries/communities";
@@ -10,6 +9,7 @@ import { MemberProgress } from "@/components/dashboard/member-progress";
 import { PostEventCapture } from "@/components/dashboard/post-event-capture";
 import { VENUE_EMOJI } from "@/lib/constants";
 import { ShareClubButton } from "@/components/dashboard/share-club-button";
+import { NewEventButton } from "@/components/dashboard/new-event-button";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -206,22 +206,11 @@ export default async function DashboardOverviewPage({ params }: Props) {
             >
               Schedule your first run to get started
             </div>
-            <Link
-              href={`/dashboard/${slug}/events/new`}
-              style={{
-                display: "inline-block",
-                padding: "8px 16px",
-                background: "#F43F5E",
-                color: "white",
-                borderRadius: "9px",
-                fontSize: "12px",
-                fontWeight: 700,
-                textDecoration: "none",
-                fontFamily: "'Bricolage Grotesque', sans-serif",
-              }}
-            >
-              + New event
-            </Link>
+            <NewEventButton
+              communitySlug={slug}
+              communityName={communityData.name}
+              variant="empty-state"
+            />
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -366,27 +355,11 @@ export default async function DashboardOverviewPage({ params }: Props) {
 
       {/* Quick actions */}
       <div style={{ display: "flex", gap: "8px" }}>
-        <Link
-          href={`/dashboard/${slug}/events/new`}
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "5px",
-            padding: "11px",
-            background: "#F43F5E",
-            color: "white",
-            borderRadius: "11px",
-            fontSize: "13px",
-            fontWeight: 700,
-            textDecoration: "none",
-            fontFamily: "'Bricolage Grotesque', sans-serif",
-            boxShadow: "0 2px 12px rgba(244,63,94,0.3)",
-          }}
-        >
-          <Plus size={14} /> New event
-        </Link>
+        <NewEventButton
+          communitySlug={slug}
+          communityName={communityData.name}
+          variant="primary"
+        />
         <ShareClubButton slug={slug} />
       </div>
     </div>

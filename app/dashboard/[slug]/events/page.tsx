@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
 import { notFound } from "next/navigation";
 import { getClubBySlug } from "@/lib/db/queries/communities";
 import { getDashboardEvents } from "@/lib/db/queries/events";
+import { NewEventButton } from "@/components/dashboard/new-event-button";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -46,25 +46,11 @@ export default async function DashboardEventsPage({ params }: Props) {
         >
           Events
         </h2>
-        <Link
-          href={`/dashboard/${slug}/events/new`}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "4px",
-            padding: "8px 14px",
-            background: "#F43F5E",
-            color: "white",
-            borderRadius: "10px",
-            fontSize: "12px",
-            fontWeight: 700,
-            textDecoration: "none",
-            fontFamily: "'Bricolage Grotesque', sans-serif",
-            boxShadow: "0 2px 8px rgba(244,63,94,0.25)",
-          }}
-        >
-          <Plus size={12} /> New event
-        </Link>
+        <NewEventButton
+          communitySlug={slug}
+          communityName={community.name}
+          variant="primary"
+        />
       </div>
 
       {allEvents.length === 0 ? (
@@ -94,22 +80,11 @@ export default async function DashboardEventsPage({ params }: Props) {
           >
             Create your first run to get started
           </div>
-          <Link
-            href={`/dashboard/${slug}/events/new`}
-            style={{
-              display: "inline-block",
-              padding: "9px 18px",
-              background: "#F43F5E",
-              color: "white",
-              borderRadius: "10px",
-              fontSize: "12px",
-              fontWeight: 700,
-              textDecoration: "none",
-              fontFamily: "'Bricolage Grotesque', sans-serif",
-            }}
-          >
-            + Create event
-          </Link>
+          <NewEventButton
+            communitySlug={slug}
+            communityName={community.name}
+            variant="empty-state"
+          />
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
