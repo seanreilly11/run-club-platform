@@ -165,3 +165,62 @@ export async function getWaitlistedCount(communityId: string): Promise<number> {
     );
   return rows[0]?.count ?? 0;
 }
+
+export type MyClubMembershipRow = {
+  role: MemberRole;
+  joinedAt: Date;
+  community: {
+    id: string;
+    slug: string;
+    name: string;
+    city: string;
+    tier: "free" | "pro";
+    memberCount: number;
+    vibe: "competitive" | "social" | "casual";
+  };
+  currentStreak: number;
+};
+
+export async function getMyClubsMemberships(
+  userId: string,
+): Promise<MyClubMembershipRow[]> {
+  const rows = await db
+    .select({
+      role: memberships.role,
+      joinedAt: memberships.joinedAt,
+      communityId: communities.id,
+      communitySlug: communities.slug,
+      communityName: communities.name,
+      communityCity: communities.city,
+      communityTier: communities.tier,
+      communityVibe: communities.vibe,
+      memberCount: communities.memberCount,
+      currentStreak: memberAttendanceStats.currentStreak,
+    })
+    .from(memberships)
+    .innerJoin(communities, eq(memberships.communityId, communities.id))
+    .leftJoin(
+      memberAttendanceStats,
+      and(
+        eq(memberAttendanceStats.userId, userId),
+        eq(memberAttendanceStats.communityId, memberships.communityId),
+      ),
+    )
+    .where(eq(memberships.userId, userId))
+    .orderBy(memberships.joinedAt);
+
+  return rows.map((r) => ({
+    role: r.role,
+    joinedAt: r.joinedAt,
+    community: {
+      id: r.communityId,
+      slug: r.communitySlug,
+      name: r.communityName,
+      city: r.communityCity,
+      tier: r.communityTier,
+      memberCount: r.memberCount,
+      vibe: r.communityVibe,
+    },
+    currentStreak: r.currentStreak ?? 0,
+  }));
+}

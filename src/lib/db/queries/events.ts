@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { eq, and, gte, sql, desc, isNull } from "drizzle-orm";
-import { events, eventRsvps, users } from "@/lib/db/schema";
+import { events, eventRsvps, users, communities, memberships } from "@/lib/db/schema";
 import type { EventRsvp } from "@/lib/db/schema";
 
 export type UpcomingEventRow = {
@@ -259,4 +259,69 @@ export async function getAttendanceHistory(
     .limit(limit);
 
   return rows;
+}
+
+export type UpcomingMemberEventRow = {
+  id: string;
+  title: string;
+  date: Date;
+  distanceKm: string | null;
+  distanceUnit: "km" | "mi";
+  postRunVenueName: string | null;
+  communityName: string;
+  communitySlug: string;
+  communityPostRunDefault: "pub" | "coffee" | "brunch" | "none";
+  communityTimezone: string;
+  rsvpStatus: "going" | "maybe" | null;
+  rsvpJoiningSocial: boolean;
+  goingCount: number;
+  aftersCount: number;
+};
+
+export async function getUpcomingEventsForMember(
+  userId: string,
+  limit = 10,
+): Promise<UpcomingMemberEventRow[]> {
+  const goingCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.status} = 'going')::int`;
+  const aftersCount = sql<number>`(SELECT COUNT(*) FROM ${eventRsvps} WHERE ${eventRsvps.eventId} = ${events.id} AND ${eventRsvps.joiningSocial} = true AND ${eventRsvps.status} = 'going')::int`;
+
+  const rows = await db
+    .select({
+      id: events.id,
+      title: events.title,
+      date: events.date,
+      distanceKm: events.distanceKm,
+      distanceUnit: events.distanceUnit,
+      postRunVenueName: events.postRunVenueName,
+      communityName: communities.name,
+      communitySlug: communities.slug,
+      communityPostRunDefault: communities.postRunDefault,
+      communityTimezone: communities.timezone,
+      rsvpStatus: eventRsvps.status,
+      rsvpJoiningSocial: eventRsvps.joiningSocial,
+      goingCount,
+      aftersCount,
+    })
+    .from(memberships)
+    .innerJoin(communities, eq(memberships.communityId, communities.id))
+    .innerJoin(
+      events,
+      and(
+        eq(events.communityId, communities.id),
+        eq(events.status, "upcoming"),
+        gte(events.date, new Date()),
+      ),
+    )
+    .leftJoin(
+      eventRsvps,
+      and(eq(eventRsvps.eventId, events.id), eq(eventRsvps.userId, userId)),
+    )
+    .where(eq(memberships.userId, userId))
+    .orderBy(events.date)
+    .limit(limit);
+
+  return rows.map((r) => ({
+    ...r,
+    rsvpJoiningSocial: r.rsvpJoiningSocial ?? false,
+  }));
 }
