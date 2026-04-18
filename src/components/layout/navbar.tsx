@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Flame } from "lucide-react";
-import { NavLink } from "@/components/nav-link";
-import { NavbarActions } from "@/components/navbar-actions";
+import { NavLink } from "./nav-link";
+import { NavbarActions } from "./navbar-actions";
 import { getAuthUser } from "@/lib/supabase/server";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";

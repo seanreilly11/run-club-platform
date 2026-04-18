@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { getAuthUser } from "@/lib/supabase/server";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/layout/navbar";
 
 export default async function MemberLayout({
   children,
