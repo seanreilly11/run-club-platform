@@ -265,15 +265,13 @@ export default async function MyClubsPage() {
                           </div>
                         )}
                       </div>
-                      {/* Stop link propagation so RSVP click doesn't navigate */}
-                      <span onClick={(ev) => ev.preventDefault()}>
-                        <MyClubsRsvpButton
-                          eventId={e.id}
-                          communitySlug={e.communitySlug}
-                          initialStatus={e.rsvpStatus}
-                          initialJoiningSocial={e.rsvpJoiningSocial}
-                        />
-                      </span>
+
+                      <MyClubsRsvpButton
+                        eventId={e.id}
+                        communitySlug={e.communitySlug}
+                        initialStatus={e.rsvpStatus}
+                        initialJoiningSocial={e.rsvpJoiningSocial}
+                      />
                     </div>
                   </Link>
                 );

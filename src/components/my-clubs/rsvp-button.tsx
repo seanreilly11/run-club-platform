@@ -72,24 +72,26 @@ export function MyClubsRsvpButton({
   }
 
   return (
-    <button
-      onClick={handleRsvp}
-      disabled={loading}
-      style={{
-        padding: "6px 14px",
-        background: loading ? "#F5F0EB" : "#F43F5E",
-        color: loading ? "#A8A29E" : "white",
-        border: "none",
-        borderRadius: "8px",
-        fontSize: "12px",
-        fontWeight: 600,
-        cursor: loading ? "default" : "pointer",
-        fontFamily: "'Bricolage Grotesque', sans-serif",
-        boxShadow: loading ? "none" : "0 2px 8px rgba(244,63,94,0.25)",
-        whiteSpace: "nowrap",
-      }}
-    >
-      {loading ? "..." : "I'm in! 🏃"}
-    </button>
+    <span onClick={(ev) => ev.preventDefault()}>
+      <button
+        onClick={handleRsvp}
+        disabled={loading}
+        style={{
+          padding: "6px 14px",
+          background: loading ? "#F5F0EB" : "#F43F5E",
+          color: loading ? "#A8A29E" : "white",
+          border: "none",
+          borderRadius: "8px",
+          fontSize: "12px",
+          fontWeight: 600,
+          cursor: loading ? "default" : "pointer",
+          fontFamily: "'Bricolage Grotesque', sans-serif",
+          boxShadow: loading ? "none" : "0 2px 8px rgba(244,63,94,0.25)",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {loading ? "..." : "I'm in! 🏃"}
+      </button>
+    </span>
   );
 }
